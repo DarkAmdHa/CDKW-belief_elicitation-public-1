@@ -1,0 +1,250 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+{{ block title }}Part A (Round {{ player.round_number }}){{ endblock }}
+
+{{ block scripts }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+var slider = document.getElementById("myRange");
+var output2 = document.getElementById("demo2");
+var output1 = document.getElementById("demo1");
+<!--output2.innerHTML = slider.value;-->
+<!--output1.innerHTML = slider.value;-->
+
+slider.oninput = function() {
+  output2.innerHTML = this.value;
+  output1.innerHTML = 100-this.value;
+  active.style.display = "block";
+  inactive.style.display = "none";
+}
+</script>
+{{ endblock }}
+
+{{ block styles }}
+<link href="{{ static 'belief-slider.css' }}" rel="stylesheet">
+<style>
+    .tab {
+        display: none;
+        text-align: justify;
+    }
+    .otree-title {
+        text-align: center;
+    }
+    .otree-body{
+        font-size: 103%;
+    }
+    .otree-timer {
+        display: none;
+    }
+</style>
+<style>
+    #active {
+        display: none;
+    }
+    #inactive {
+        display: block;
+    }
+</style>
+{{ endblock }}
+
+{{ block content }}
+
+<!-- PIE CHART CODES - EDIT COMPOSITION HERE -->
+<!-- See: https://developers.google.com/chart/interactive/docs/gallery/piechart?csw=1#Example -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<!-- 10-ball urn -->
+<script type="text/javascript">
+    google.charts.load("current", {packages:["corechart"]});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+        ['Color', 'Number', {type: 'string', role: 'tooltip'}],
+        ['{{ colorlabel1 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel1 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
+        ['{{ colorlabel2 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel2 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
+        ['{{ colorlabel3 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel3 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
+        ['{{ colorlabel4 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel4 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
+        ['{{ colorlabel5 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel5 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
+        ['{{ colorlabel6 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel6 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
+        ['{{ colorlabel7 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel7 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
+        ['{{ colorlabel8 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel8 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
+        ['{{ colorlabel9 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel9 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
+        ['{{ colorlabel10 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel10 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
+    ]);
+
+    var options = {
+        enableInteractivity: false,
+        allowHtml: true,
+        chartArea:{top:0, height:600},
+        legend: 'none',
+        pieSliceText: 'label',
+        pieSliceTextStyle: { color: 'black', fontSize: 12 },
+        pieStartAngle: 270,
+        tooltip: { trigger: 'focus', showColorCode: 'false', text: 'none', textStyle: { fontSize: 18 }, isHtml: 'true' },
+        slices: {
+        0: { color: {% if treatrisk %}'{{ slicecolor1 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor1 }}'{% if colorlabel1 == colorevent and predicttrue %}, italic: true, bold: true, fontSize: 15{% elif colorlabel1 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %} } },
+        1: { color: {% if treatrisk %}'{{ slicecolor2 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor2 }}'{% if colorlabel2 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel2 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
+        2: { color: {% if treatrisk %}'{{ slicecolor3 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor3 }}'{% if colorlabel3 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel3 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
+        3: { color: {% if treatrisk %}'{{ slicecolor4 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor4 }}'{% if colorlabel4 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel4 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
+        4: { color: {% if treatrisk %}'{{ slicecolor5 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor5 }}'{% if colorlabel5 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel5 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
+        5: { color: {% if treatrisk %}'{{ slicecolor6 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor6 }}'{% if colorlabel6 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel6 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
+        6: { color: {% if treatrisk %}'{{ slicecolor7 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor7 }}'{% if colorlabel7 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel7 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
+        7: { color: {% if treatrisk %}'{{ slicecolor8 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor8 }}'{% if colorlabel8 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel8 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
+        8: { color: {% if treatrisk %}'{{ slicecolor9 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor9 }}'{% if colorlabel9 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel9 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
+        9: { color: {% if treatrisk %}'{{ slicecolor10 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor10 }}'{% if colorlabel10 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel10 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
+        },
+        pieSliceBorderColor: {% if treatrisk %}'LightGray'{% else %}'Gray'{% endif %},
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('urn10'));
+    chart.draw(data, options);
+    }
+</script>
+<!-- 2-ball urn -->
+<script type="text/javascript">
+    google.charts.load("current", {packages:["corechart"]});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+        ['Color', 'Number', {type: 'string', role: 'tooltip'}],
+        ['{{ colorlabel1 }}'{% if treatrisk %}+': 50'{% else %}+': ??'{% endif %}, 50, '{{ colorlabel1 }}'{% if treatrisk %}+': 50'{% else %}+': ??'{% endif %}+' balls'],
+        ['{{ colorlabel2 }}'{% if treatrisk %}+': 50'{% else %}+': ??'{% endif %}, 50, '{{ colorlabel2 }}'{% if treatrisk %}+': 50'{% else %}+': ??'{% endif %}+' balls'],
+    ]);
+
+    var options = {
+        enableInteractivity: false,
+        allowHtml: true,
+        chartArea:{top:0, height:600},
+        legend: 'none',
+        pieSliceText: 'label',
+        pieSliceTextStyle: { color: 'black', fontSize: 12 },
+        pieStartAngle: 270,
+        tooltip: { trigger: 'focus', showColorCode: 'false', text: 'none', textStyle: { fontSize: 18 },  isHtml: 'true', markerType: 'null' },
+        slices: {
+        0: { color: {% if treatrisk %}'{{ slicecolor1 }}'{% else %}'grey'{% endif %}, textStyle: { color: '{{ textcolor1 }}'{% if colorlabel1 == colorevent and predicttrue %}, italic: true, bold: true, fontSize: 15{% elif colorlabel1 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %} } },
+        1: { color: {% if treatrisk %}'{{ slicecolor2 }}'{% else %}'grey'{% endif %}, textStyle: { color: '{{ textcolor2 }}'{% if colorlabel2 == colorevent and predicttrue %}, italic: true, bold: true, fontSize: 15{% elif colorlabel2 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
+        },
+        pieSliceBorderColor: {% if treatrisk %}'LightGray'{% else %}'Gray'{% endif %},
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('urn2'));
+    chart.draw(data, options);
+    }
+
+
+</script>
+
+<p>
+    {% if treatambiguity %}
+    In this round, the urn consists of <b>100 balls of {% if prior == 50 %}2{% else %}10{% endif %} different colors</b>.
+    <br>
+    Specifically, there are some balls that are {% if prior == 50 %}{{ colorlabel1 }}, and some that are {{ colorlabel2 }}{% else %}{{ colorlabel1 }}, {{ colorlabel2 }}, {{ colorlabel3 }}, {{ colorlabel4 }}, {{ colorlabel5 }}, {{ colorlabel6 }}, {{ colorlabel7 }}, {{ colorlabel8 }}, {{ colorlabel9 }}, and {{ colorlabel10 }}{% endif %} in color.
+    <br>
+    However, you do <b>not</b> know the exact composition of the urn.
+    {% elif treatrisk %}
+    In this round, the urn consists of <b>100 balls</b>.
+    <br>
+    Specifically, there are {% if prior == 50 %}<b>50</b> {{ colorlabel1 }} and <b>50</b> {{ colorlabel2 }} balls{% else %}<b>10</b> {{ colorlabel1 }} balls, <b>10</b> {{ colorlabel2 }} balls, <b>10</b> {{ colorlabel3 }} balls, <b>10</b> {{ colorlabel4 }} balls, <b>10</b> {{ colorlabel5 }} balls, <b>10</b> {{ colorlabel6 }} balls, <b>10</b> {{ colorlabel7 }} balls, <b>10</b> {{ colorlabel8 }} balls, <b>10</b> {{ colorlabel9 }} balls, and <b>10</b> {{ colorlabel10 }} balls{% endif %}.
+    {% endif %}
+    <br><br>
+</p>
+
+{% if prior == 50 %}
+<div id="urn2" align="center" style="width: 100%; height: 500px;" ></div>
+{% else %}
+<div id="urn10" align="center" style="width: 100%; height: 500px;" ></div>
+{% endif %}
+
+<br><br>
+
+<p>
+    <u><b>PREDICTED EVENT:</b></u> The randomly drawn ball <b>is{% if predictfalse %} NOT{% endif %} {{ colorevent }}</b>.
+    <br>
+    <br>
+    What is the chance (out of 100) that a randomly drawn ball <b>is{% if predictfalse %} NOT{% endif %} {{ colorevent }}</b> (i.e., is{% if predicttrue %} <u>not</u> {% endif %} {% if prior != 50 %}{% if predictfalse %}<u>any one</u>{% else %}one{% endif %} of the 9 other colors{% elif prior == 50 %}{% if colorlabel1 != colorevent %}{{ colorlabel1 }}{% elif colorlabel2 != colorevent %}{{ colorlabel2 }}{% endif %}{% endif %})?
+    <br>
+    <br>
+</p>
+
+<div align="center">
+    <label for="demo1" class="float-left" style="width:300px" align="left">
+        <b>
+            <span id="demo1"></span>% chance that ball is <br>
+            {% if predicttrue %}
+                {% if prior != 50 %}
+                {% if colorlabel1 != colorevent %}{{ colorlabel1 }}, {% endif %}
+                {% if colorlabel2 != colorevent %}{{ colorlabel2 }}, {% endif %}
+                {% if colorlabel3 != colorevent %}{{ colorlabel3 }}, {% endif %}
+                {% if colorlabel4 != colorevent %}{{ colorlabel4 }}, {% endif %}
+                {% if colorlabel5 != colorevent %}{{ colorlabel5 }}, {% endif %}
+                {% if colorlabel6 != colorevent %}{{ colorlabel6 }}, {% endif %}
+                {% if colorlabel7 != colorevent %}{{ colorlabel7 }}, {% endif %}
+                {% if colorlabel8 != colorevent %}{{ colorlabel8 }}, {% endif %}
+                {% if colorlabel10 == colorevent %}or {% endif %}
+                {% if colorlabel9 != colorevent %}{{ colorlabel9 }}, {% endif %}
+                {% if colorlabel10 != colorevent %}or {% endif %}
+                {% if colorlabel10 != colorevent %}{{ colorlabel10 }}{% endif %}.
+                {% elif prior == 50 %}
+                {% if colorlabel1 != colorevent %}{{ colorlabel1 }}{% elif colorlabel2 != colorevent %}{{ colorlabel2 }}{% endif %}.
+                {% endif %}
+            {% else %}
+            {{ colorevent }}.
+            {% endif %}
+        </b>
+    </label>
+    <label for="demo2" class="float-right" style="width:300px" align="right">
+        <b>
+            <span id="demo2"></span>% chance that ball is <br>
+            {% if predictfalse %}
+                {% if prior != 50 %}
+                {% if colorlabel1 != colorevent %}{{ colorlabel1 }}, {% endif %}
+                {% if colorlabel2 != colorevent %}{{ colorlabel2 }}, {% endif %}
+                {% if colorlabel3 != colorevent %}{{ colorlabel3 }}, {% endif %}
+                {% if colorlabel4 != colorevent %}{{ colorlabel4 }}, {% endif %}
+                {% if colorlabel5 != colorevent %}{{ colorlabel5 }}, {% endif %}
+                {% if colorlabel6 != colorevent %}{{ colorlabel6 }}, {% endif %}
+                {% if colorlabel7 != colorevent %}{{ colorlabel7 }}, {% endif %}
+                {% if colorlabel8 != colorevent %}{{ colorlabel8 }}, {% endif %}
+                {% if colorlabel10 == colorevent %}or {% endif %}
+                {% if colorlabel9 != colorevent %}{{ colorlabel9 }}, {% endif %}
+                {% if colorlabel10 != colorevent %}or {% endif %}
+                {% if colorlabel10 != colorevent %}{{ colorlabel10 }}{% endif %}.
+                {% elif prior == 50 %}
+                {% if colorlabel1 != colorevent %}{{ colorlabel1 }}{% elif colorlabel2 != colorevent %}{{ colorlabel2 }}{% endif %}.
+                {% endif %}
+            {% else %}
+            {{ colorevent }}.
+            {% endif %}
+        </b>
+    </label>
+
+    <div class="slidecontainer">
+        <input type="range" min="0" max="100" step="1" value="-1" class="slider" id="myRange" name="belief">
+    </div>
+    <br>
+</div>
+
+
+<p style="align: left">
+    Reminder: {% if bsr %}Your chance of receiving &euro;{{ stakes }} will depend on the accuracy of your prediction.{% else %}Your payoff will depend on the accuracy of your prediction.{% endif %}
+</p>
+
+<br>
+<br>
+
+<div class="button" align="center" id="active">
+    <button class="btn btn-danger mb-3">
+        SUBMIT
+    </button>
+</div>
+
+<div class="button" align="center" id="inactive">
+    <button class="btn btn-secondary disabled mb-3">
+        SUBMIT
+    </button>
+</div>
+
+{{ endblock }}

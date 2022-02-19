@@ -1,11 +1,44 @@
 from os import environ
-
+SESSION_CONFIG_DEFAULTS = dict(
+    real_world_currency_per_point=1, participation_fee=0
+)
 SESSION_CONFIGS = [
-    # dict(
-    #     name='public_goods',
-    #     app_sequence=['public_goods'],
-    #     num_demo_participants=3,
-    # ),
+    dict(
+        name='Test_BSR',
+        app_sequence=[
+            'belief_task',
+        ],
+        num_demo_participants=2,
+        showupfee=4,
+        bsr=1,
+        qsr=0,
+        flat=0,
+        stakeshigh=1,
+        stakeshighval=15,
+        stakeslowval=1.5,
+        stakesflatval=15,
+        full_screen=True,
+        live_ping=False,
+        audio=True,
+    ),
+    dict(
+        name='Test_QSR',
+        app_sequence=[
+            'belief_task',
+        ],
+        num_demo_participants=2,
+        showupfee=4,
+        bsr=0,
+        qsr=1,
+        flat=0,
+        stakeshigh=1,
+        stakeshighval=15,
+        stakeslowval=1.5,
+        stakesflatval=15,
+        full_screen=True,
+        live_ping=False,
+        audio=True,
+    ),
 ]
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
@@ -13,25 +46,50 @@ SESSION_CONFIGS = [
 # the session config can be accessed from methods in your apps as self.session.config,
 # e.g. self.session.config['participation_fee']
 
-SESSION_CONFIG_DEFAULTS = dict(
-    real_world_currency_per_point=1.00, participation_fee=0.00, doc=""
-)
-
-PARTICIPANT_FIELDS = []
-SESSION_FIELDS = []
-
 # ISO-639 code
 # for example: de, fr, ja, ko, zh-hans
 LANGUAGE_CODE = 'en'
-
 # e.g. EUR, GBP, CNY, JPY
-REAL_WORLD_CURRENCY_CODE = 'USD'
-USE_POINTS = True
+REAL_WORLD_CURRENCY_CODE = 'EUR'
+USE_POINTS = False
+# POINTS_CUSTOM_NAME = "tokens"
+REAL_WORLD_CURRENCY_DECIMAL_PLACES = 1
+DEMO_PAGE_INTRO_HTML = ''
+PARTICIPANT_FIELDS = ['is_dropout', 'dropout', 'order1', 'order2',
+                      'riskfirst', 'ambiguityfirst',
+                      'urn10_color_code1', 'urn10_color_code2', 'urn2_color_code1', 'urn2_color_code2',
+                      'prior1', 'prior2', 'prior3', 'prior4', 'prior5', 'prior6',
+                      ]
+SESSION_FIELDS = []
+
+ROOMS = [
+    dict(
+        name='cdkw_1',
+        display_name='Experiments in Individual Decision Making 1',
+        participant_label_file='_rooms/experimenTUM.txt',
+    ),
+    dict(
+        name='cdkw_2',
+        display_name='Experiments in Individual Decision Making 2',
+        participant_label_file='_rooms/experimenTUM.txt',
+    ),
+    dict(
+        name='cdkw_3',
+        display_name='Experiments in Individual Decision Making 3',
+        participant_label_file='_rooms/experimenTUM.txt',
+    ),
+    dict(
+        name='cdkw_4',
+        display_name='Experiments in Individual Decision Making 4',
+        participant_label_file='_rooms/experimenTUM.txt',
+    ),
+    ]
 
 ADMIN_USERNAME = 'admin'
 # for security, best to set admin password in an environment variable
 ADMIN_PASSWORD = environ.get('OTREE_ADMIN_PASSWORD')
 
-DEMO_PAGE_INTRO_HTML = """ """
+SECRET_KEY = 'blahblah'
 
-SECRET_KEY = '1532876719695'
+# if an app is included in SESSION_CONFIGS, you don't need to list it here
+INSTALLED_APPS = ['otree']
