@@ -54,9 +54,12 @@ slider.oninput = function() {
 
 <!-- PIE CHART CODES - EDIT COMPOSITION HERE -->
 <!-- See: https://developers.google.com/chart/interactive/docs/gallery/piechart?csw=1#Example -->
+{% comment %}
+
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-<!-- 10-ball urn -->
+<!-- 10-ball urn Pie Chart -->
+
 <script type="text/javascript">
     google.charts.load("current", {packages:["corechart"]});
     google.charts.setOnLoadCallback(drawChart);
@@ -98,13 +101,16 @@ slider.oninput = function() {
         },
         pieSliceBorderColor: {% if treatrisk %}'LightGray'{% else %}'Gray'{% endif %},
     };
-
     var chart = new google.visualization.PieChart(document.getElementById('urn10'));
     chart.draw(data, options);
     }
 </script>
+{% endcomment %}
+
 <!-- 2-ball urn -->
+
 <script type="text/javascript">
+{% comment %}
     google.charts.load("current", {packages:["corechart"]});
     google.charts.setOnLoadCallback(drawChart);
     function drawChart() {
@@ -134,6 +140,71 @@ slider.oninput = function() {
     chart.draw(data, options);
     }
 
+{% endcomment %}
+
+
+    //Array containing possible colors,and the number of balls already colored with that given color
+    let allColors;
+{% if treatrisk %}
+    {% if prior == 50 %}
+        allColors = [
+            {
+                color: '{{ colorlabel1 }}',
+                number: 0
+            },
+            {
+                color: '{{ colorlabel2 }}',
+                number: 0
+            }
+        ];
+    {% else %}
+        allColors = [
+            {
+                color: '{{ colorlabel1 }}',
+                number: 0
+            },
+            {
+                color: '{{ colorlabel2 }}',
+                number: 0
+            },
+            {
+                color: '{{ colorlabel3 }}',
+                number: 0
+            },
+            {
+                color: '{{ colorlabel4 }}',
+                number: 0
+            },
+            {
+                color: '{{ colorlabel5 }}',
+                number: 0
+            },
+            {
+                color: '{{ colorlabel6 }}',
+                number: 0
+            },
+            {
+                color: '{{ colorlabel7 }}',
+                number: 0
+            },
+            {
+                color: '{{ colorlabel8 }}',
+                number: 0
+            },
+            {
+                color: '{{ colorlabel9 }}',
+                number: 0
+            },
+            {
+                color: '{{ colorlabel10 }}',
+                number: 0
+            }
+        ];
+    {% endif %}
+{% else %}
+    allColors =  [];
+{% endif %}
+    console.log(allColors);
 
 </script>
 
@@ -152,16 +223,262 @@ slider.oninput = function() {
     <br><br>
 </p>
 
+
+{% comment %}
+<!-- Pie Chart Container -->
 {% if prior == 50 %}
 <div id="urn2" align="center" style="width: 100%; height: 500px;" ></div>
 {% else %}
 <div id="urn10" align="center" style="width: 100%; height: 500px;" ></div>
 {% endif %}
+{% endcomment %}
+
+<!-- graphic Urn -->
+    <style>
+
+
+        .urn{
+        background: linear-gradient(44deg, #a4f2ff, #c8f7ff);
+        width: 262px;
+        height: 304px;
+        border: 6px solid rgb(56, 56, 56);
+        border-bottom-left-radius: 15%;
+        border-bottom-right-radius: 15%;
+        margin: auto;
+        border-top: none;
+        position: relative;
+        box-shadow: 11px 11px 12px 2px rgb(0 0 0 / 5%);
+        }
+
+        .ball{
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1px solid #7e7e7e;
+        box-shadow:inset 3px -4px 8px rgba(255, 255, 255, 0.384), inset -3px 1px 4px rgba(0, 0, 0, 0.404), 0 0 1px #0000003b ;
+        transition: border 0.5s ease;
+        }
+
+        .ball:nth-child(4n){
+        z-index: 100;
+        }
+
+        .ball:nth-child(2n){
+        z-index: 50;
+        }
+
+
+        .ball.highlighted{
+        border: 3px solid yellow;
+        z-index: 100;
+        }
+
+        .ball.highlightedAll{
+        border: 2px solid yellow;
+        }
+
+        .ball.uncolored{
+        border-color: #7e7e7e;
+        }
+
+        .ball.uncolored:before{
+            content: '?';
+            width:100%;
+            height:100%;
+            font-size:13px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+    </style>
+    <div class="urn">
+
+    </div>
+    <script>
+        const urnContainer = document.querySelector('.urn');
+
+//Ball Object
+  class Ball {
+
+    constructor(x, y, color,colorName, border, size) {
+       this.x = x;
+       this.y = y;
+       this.color = color;
+       this.colorName = colorName;
+       this.border = border;
+    }
+    //Function to "draw" the ball using the details it's object has
+    draw() {
+        const ball = document.createElement('div');
+        ball.classList.add('ball');
+        ball.style.left = this.x + 'px';
+        ball.style.top = this.y + 'px';
+        if(this.border){
+            ball.classList.add('uncolored');
+        }else{
+            ball.classList.add(this.colorName);
+            ball.style.background = this.color;
+        }
+        urnContainer.appendChild(ball);
+      }
+ }
+
+ //A sort of flag to know that the balls are already highlighted, in order to prevent multiple calls to the highlighting function
+ let ballsHighlighted = false;
+ const highlightBalls = function(isColor, colorName) {
+     //If already highlighted, break out
+     if(ballsHighlighted){
+        return;
+     }
+     ballsHighlighted = true;
+
+    let ballsToHighlight,
+    className;
+
+    //Highlight the balls with the specified color
+    if(isColor){
+        ballsToHighlight = urnContainer.querySelectorAll(`.ball.${colorName}`);
+        className = 'highlighted'
+    //Highlight the balls that are NOT of the specified color
+    }else{
+        ballsToHighlight = urnContainer.querySelectorAll(`.ball:not(.${colorName})`);
+        className = 'highlightedAll'
+    }
+
+    for (var i =0;i<ballsToHighlight.length; i++){
+        ballsToHighlight[i].classList.toggle(`${className}`);
+    }
+ }
+
+ const unhighlightBalls = (isColor, colorName)=>{
+      if(!ballsHighlighted){
+        return;
+     }
+
+     let ballsToHighlight,
+    className;
+
+    //Highlight the balls with the specified color
+    if(isColor){
+        ballsToHighlight = urnContainer.querySelectorAll(`.ball.${colorName}`);
+        className = 'highlighted'
+    //Highlight the balls that are NOT of the specified color
+    }else{
+        ballsToHighlight = urnContainer.querySelectorAll(`.ball:not(.${colorName})`);
+        className = 'highlightedAll'
+    }
+
+    for (var i=0;i<ballsToHighlight.length; i++){
+        ballsToHighlight[i].classList.toggle(`${className}`);
+    }
+    ballsHighlighted = false;
+}
+
+ //Balls array, used to later draw each ball object within
+balls = [];
+
+let size = 20,
+    yPos = 0,
+    i=0,
+    x=17,
+    y=278,
+    increment = 5;
+
+while(balls.length<100){
+    //First row of balls is unique, in order to account for the curved section of the jar
+    if(yPos === 0){
+        ball = new Ball(
+        x,
+        y,
+        '#333',
+        'red',
+        true
+    );
+    x+=size+2;
+    //If reached the end of the first row(right side of the jar), go to the next row
+    if(x>220){
+        yPos += 1;
+    }
+    balls.push(ball);
+}
+//All other rows
+else if(yPos >= 1){
+    if(x>=220){
+        yPos +=1;
+        y-=size+2;
+        x=0;
+    }else{
+        x+=size+increment;
+    }
+    ball = new Ball(
+        x,
+        y,
+        '#333',
+        'red',
+        true
+    );
+    balls.push(ball);
+
+    }
+
+}
+
+
+
+
+
+//Loop through each ball object in the 'balls' array, in order to "draw" each of them
+function loop() {
+    for (const ball of balls) {
+      ball.draw();
+    }
+ }
+
+ //Call to drawing functions
+ loop();
+
+
+const allBalls = document.querySelectorAll('.ball'),
+    numberOfColors = allColors.length;
+
+
+    //Function used in order to get a random color from the array, making sure that the number of balls of the returned color has not already surpassed
+    // the possible maximum
+const getRandomColor = function(){
+    let colorToAdd = allColors[Math.floor(Math.random() * numberOfColors)];
+    while(colorToAdd.number>=(100/numberOfColors)){
+        colorToAdd = allColors[Math.floor(Math.random() * numberOfColors)];
+    }
+    colorToAdd.number = `${parseInt(colorToAdd.number)+1}`;
+    return colorToAdd;
+}
+
+
+//Function used to get consecutive colors, in case on wants to fill each row with the same color
+//The colors of each row are still randomized
+let colorIndex =Math.floor(Math.random() * numberOfColors),
+    colorToAdd = allColors[colorIndex];
+const getConsecutiveColors = function(){
+    if(colorToAdd.number>=100/numberOfColors){
+        colorIndex = Math.floor(Math.random() * numberOfColors);
+        colorToAdd = allColors[colorIndex];
+        while(colorToAdd.number>=(100/numberOfColors)){
+            colorIndex = Math.floor(Math.random() * numberOfColors)
+            colorToAdd = allColors[colorIndex];
+        }
+    }
+    colorToAdd.number = `${parseInt(colorToAdd.number)+1}`;
+    return colorToAdd;
+}
+    </script>
+
+
 
 <br><br>
 
 <p>
-    <u><b>PREDICTED EVENT:</b></u> The randomly drawn ball <b>is{% if predictfalse %} NOT{% endif %} {{ colorevent }}</b>.
+    <u><b>PREDICTED EVENT:</b></u> The randomly drawn ball <a href='#' class="predicted-event"><b>is{% if predictfalse %} NOT{% endif %} {{ colorevent }}</b></a>.
     <br>
     <br>
     What is the chance (out of 100) that a randomly drawn ball <b>is{% if predictfalse %} NOT{% endif %} {{ colorevent }}</b> (i.e., is{% if predicttrue %} <u>not</u> {% endif %} {% if prior != 50 %}{% if predictfalse %}<u>any one</u>{% else %}one{% endif %} of the 9 other colors{% elif prior == 50 %}{% if colorlabel1 != colorevent %}{{ colorlabel1 }}{% elif colorlabel2 != colorevent %}{{ colorlabel2 }}{% endif %}{% endif %})?
@@ -169,6 +486,58 @@ slider.oninput = function() {
     <br>
 </p>
 
+
+<script>
+    if(allColors.length>0){
+    allBalls.forEach(ball =>{
+        ball.classList.remove('uncolored');
+        //If you want random colors, use the following line of code
+        // let colorToAdd = getRandomColor();
+        //Else:
+        let colorToAdd = getConsecutiveColors();
+        let colorName = colorToAdd.color;
+        ball.style.background = colorName.replace(/\s/g, "").toLowerCase();
+        ball.classList.add(colorName.replace(/\s/g, "-").toLowerCase());
+    })
+}
+    const predictedEvent = '{{colorevent}}';
+    {% if treatrisk %}
+        {% if predictfalse %}
+            setTimeout(()=>{
+                highlightBalls(false, predictedEvent.replace(/\s/g, "-").toLowerCase());
+                //Unhighlight after 2seconds
+                setTimeout(()=>{
+                    unhighlightBalls(false, predictedEvent.replace(/\s/g, "-").toLowerCase())
+                },2000);
+
+                document.querySelector('.predicted-event').addEventListener('mouseenter', ()=>{
+                    highlightBalls(false, predictedEvent.replace(/\s/g, "-").toLowerCase());
+                });
+                document.querySelector('.predicted-event').addEventListener('mouseleave', ()=>{
+                    unhighlightBalls(false, predictedEvent.replace(/\s/g, "-").toLowerCase());
+                });
+            },1000);
+        {% else %}
+            setTimeout(()=>{
+                highlightBalls(true, predictedEvent.replace(/\s/g, "-").toLowerCase());
+                //Unhighlight after 2seconds
+                setTimeout(()=>{
+                    unhighlightBalls(true, predictedEvent.replace(/\s/g, "-").toLowerCase())
+                },2000);
+
+                document.querySelector('.predicted-event').addEventListener('mouseenter', ()=>{
+                    highlightBalls(true, predictedEvent.replace(/\s/g, "-").toLowerCase());
+                });
+                document.querySelector('.predicted-event').addEventListener('mouseleave', ()=>{
+                    unhighlightBalls(true, predictedEvent.replace(/\s/g, "-").toLowerCase());
+                });
+            },1000);
+
+    {% endif %}
+    {% endif %}
+
+
+</script>
 <div align="center">
     <label for="demo1" class="float-left" style="width:300px" align="left">
         <b>
