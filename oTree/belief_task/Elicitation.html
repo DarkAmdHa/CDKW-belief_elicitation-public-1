@@ -21,485 +21,234 @@ slider.oninput = function() {
   inactive.style.display = "none";
 }
 </script>
-{{ endblock }}
-
-{{ block styles }}
-<link href="{{ static 'belief-slider.css' }}" rel="stylesheet">
-<style>
-    .tab {
-        display: none;
-        text-align: justify;
-    }
-    .otree-title {
-        text-align: center;
-    }
-    .otree-body{
-        font-size: 103%;
-    }
-    .otree-timer {
-        display: none;
-    }
-</style>
-<style>
-    #active {
-        display: none;
-    }
-    #inactive {
-        display: block;
-    }
-</style>
-{{ endblock }}
-
-{{ block content }}
-
-<!-- PIE CHART CODES - EDIT COMPOSITION HERE -->
-<!-- See: https://developers.google.com/chart/interactive/docs/gallery/piechart?csw=1#Example -->
-{% comment %}
-
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
-<!-- 10-ball urn Pie Chart -->
-
 <script type="text/javascript">
-    google.charts.load("current", {packages:["corechart"]});
-    google.charts.setOnLoadCallback(drawChart);
-    function drawChart() {
-    var data = google.visualization.arrayToDataTable([
-        ['Color', 'Number', {type: 'string', role: 'tooltip'}],
-        ['{{ colorlabel1 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel1 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
-        ['{{ colorlabel2 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel2 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
-        ['{{ colorlabel3 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel3 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
-        ['{{ colorlabel4 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel4 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
-        ['{{ colorlabel5 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel5 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
-        ['{{ colorlabel6 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel6 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
-        ['{{ colorlabel7 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel7 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
-        ['{{ colorlabel8 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel8 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
-        ['{{ colorlabel9 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel9 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
-        ['{{ colorlabel10 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}, 10, '{{ colorlabel10 }}'{% if treatrisk %}+': 10'{% else %}+': ??'{% endif %}+' balls'],
-    ]);
-
-    var options = {
-        enableInteractivity: false,
-        allowHtml: true,
-        chartArea:{top:0, height:600},
-        legend: 'none',
-        pieSliceText: 'label',
-        pieSliceTextStyle: { color: 'black', fontSize: 12 },
-        pieStartAngle: 270,
-        tooltip: { trigger: 'focus', showColorCode: 'false', text: 'none', textStyle: { fontSize: 18 }, isHtml: 'true' },
-        slices: {
-        0: { color: {% if treatrisk %}'{{ slicecolor1 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor1 }}'{% if colorlabel1 == colorevent and predicttrue %}, italic: true, bold: true, fontSize: 15{% elif colorlabel1 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %} } },
-        1: { color: {% if treatrisk %}'{{ slicecolor2 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor2 }}'{% if colorlabel2 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel2 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
-        2: { color: {% if treatrisk %}'{{ slicecolor3 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor3 }}'{% if colorlabel3 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel3 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
-        3: { color: {% if treatrisk %}'{{ slicecolor4 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor4 }}'{% if colorlabel4 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel4 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
-        4: { color: {% if treatrisk %}'{{ slicecolor5 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor5 }}'{% if colorlabel5 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel5 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
-        5: { color: {% if treatrisk %}'{{ slicecolor6 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor6 }}'{% if colorlabel6 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel6 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
-        6: { color: {% if treatrisk %}'{{ slicecolor7 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor7 }}'{% if colorlabel7 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel7 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
-        7: { color: {% if treatrisk %}'{{ slicecolor8 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor8 }}'{% if colorlabel8 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel8 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
-        8: { color: {% if treatrisk %}'{{ slicecolor9 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor9 }}'{% if colorlabel9 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel9 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
-        9: { color: {% if treatrisk %}'{{ slicecolor10 }}'{% else %}'Gray'{% endif %}, textStyle: { color: '{{ textcolor10 }}'{% if colorlabel10 == colorevent and predicttrue  %}, italic: true, bold: true, fontSize: 15{% elif colorlabel10 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
-        },
-        pieSliceBorderColor: {% if treatrisk %}'LightGray'{% else %}'Gray'{% endif %},
-    };
-    var chart = new google.visualization.PieChart(document.getElementById('urn10'));
-    chart.draw(data, options);
-    }
-</script>
-{% endcomment %}
-
-<!-- 2-ball urn -->
-
-<script type="text/javascript">
-{% comment %}
-    google.charts.load("current", {packages:["corechart"]});
-    google.charts.setOnLoadCallback(drawChart);
-    function drawChart() {
-    var data = google.visualization.arrayToDataTable([
-        ['Color', 'Number', {type: 'string', role: 'tooltip'}],
-        ['{{ colorlabel1 }}'{% if treatrisk %}+': 50'{% else %}+': ??'{% endif %}, 50, '{{ colorlabel1 }}'{% if treatrisk %}+': 50'{% else %}+': ??'{% endif %}+' balls'],
-        ['{{ colorlabel2 }}'{% if treatrisk %}+': 50'{% else %}+': ??'{% endif %}, 50, '{{ colorlabel2 }}'{% if treatrisk %}+': 50'{% else %}+': ??'{% endif %}+' balls'],
-    ]);
-
-    var options = {
-        enableInteractivity: false,
-        allowHtml: true,
-        chartArea:{top:0, height:600},
-        legend: 'none',
-        pieSliceText: 'label',
-        pieSliceTextStyle: { color: 'black', fontSize: 12 },
-        pieStartAngle: 270,
-        tooltip: { trigger: 'focus', showColorCode: 'false', text: 'none', textStyle: { fontSize: 18 },  isHtml: 'true', markerType: 'null' },
-        slices: {
-        0: { color: {% if treatrisk %}'{{ slicecolor1 }}'{% else %}'grey'{% endif %}, textStyle: { color: '{{ textcolor1 }}'{% if colorlabel1 == colorevent and predicttrue %}, italic: true, bold: true, fontSize: 15{% elif colorlabel1 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %} } },
-        1: { color: {% if treatrisk %}'{{ slicecolor2 }}'{% else %}'grey'{% endif %}, textStyle: { color: '{{ textcolor2 }}'{% if colorlabel2 == colorevent and predicttrue %}, italic: true, bold: true, fontSize: 15{% elif colorlabel2 != colorevent and predictfalse %}, italic: true, bold: true, fontSize: 15{% endif %}  } },
-        },
-        pieSliceBorderColor: {% if treatrisk %}'LightGray'{% else %}'Gray'{% endif %},
-    };
-
-    var chart = new google.visualization.PieChart(document.getElementById('urn2'));
-    chart.draw(data, options);
-    }
-
-{% endcomment %}
-
-
     //Array containing possible colors,and the number of balls already colored with that given color
     let allColors;
-{% if treatrisk %}
-    {% if prior == 50 %}
-        allColors = [
-            {
-                color: '{{ colorlabel1 }}',
-                number: 0
-            },
-            {
-                color: '{{ colorlabel2 }}',
-                number: 0
-            }
-        ];
+    {% if treatrisk %}
+        {% if prior == 50 %}
+            allColors = [
+                {
+                    color: '{{ slicecolor1 }}',
+                    number: 0
+                },
+                {
+                    color: '{{ slicecolor2 }}',
+                    number: 0
+                }
+            ];
+        {% else %}
+            allColors = [
+                {
+                    color: '{{ slicecolor1 }}',
+                    number: 0
+                },
+                {
+                    color: '{{ slicecolor2 }}',
+                    number: 0
+                },
+                {
+                    color: '{{ slicecolor3 }}',
+                    number: 0
+                },
+                {
+                    color: '{{ slicecolor4 }}',
+                    number: 0
+                },
+                {
+                    color: '{{ slicecolor5 }}',
+                    number: 0
+                },
+            ];
+        {% endif %}
     {% else %}
-        allColors = [
-            {
-                color: '{{ colorlabel1 }}',
-                number: 0
-            },
-            {
-                color: '{{ colorlabel2 }}',
-                number: 0
-            },
-            {
-                color: '{{ colorlabel3 }}',
-                number: 0
-            },
-            {
-                color: '{{ colorlabel4 }}',
-                number: 0
-            },
-            {
-                color: '{{ colorlabel5 }}',
-                number: 0
-            },
-            {
-                color: '{{ colorlabel6 }}',
-                number: 0
-            },
-            {
-                color: '{{ colorlabel7 }}',
-                number: 0
-            },
-            {
-                color: '{{ colorlabel8 }}',
-                number: 0
-            },
-            {
-                color: '{{ colorlabel9 }}',
-                number: 0
-            },
-            {
-                color: '{{ colorlabel10 }}',
-                number: 0
-            }
-        ];
+        allColors =  [];
     {% endif %}
-{% else %}
-    allColors =  [];
-{% endif %}
     console.log(allColors);
-
 </script>
+<script>
+    const urnContainer = document.querySelector('.urn');
 
-<p>
-    {% if treatambiguity %}
-    In this round, the urn consists of <b>100 balls of {% if prior == 50 %}2{% else %}10{% endif %} different colors</b>.
-    <br>
-    Specifically, there are some balls that are {% if prior == 50 %}{{ colorlabel1 }}, and some that are {{ colorlabel2 }}{% else %}{{ colorlabel1 }}, {{ colorlabel2 }}, {{ colorlabel3 }}, {{ colorlabel4 }}, {{ colorlabel5 }}, {{ colorlabel6 }}, {{ colorlabel7 }}, {{ colorlabel8 }}, {{ colorlabel9 }}, and {{ colorlabel10 }}{% endif %} in color.
-    <br>
-    However, you do <b>not</b> know the exact composition of the urn.
-    {% elif treatrisk %}
-    In this round, the urn consists of <b>100 balls</b>.
-    <br>
-    Specifically, there are {% if prior == 50 %}<b>50</b> {{ colorlabel1 }} and <b>50</b> {{ colorlabel2 }} balls{% else %}<b>10</b> {{ colorlabel1 }} balls, <b>10</b> {{ colorlabel2 }} balls, <b>10</b> {{ colorlabel3 }} balls, <b>10</b> {{ colorlabel4 }} balls, <b>10</b> {{ colorlabel5 }} balls, <b>10</b> {{ colorlabel6 }} balls, <b>10</b> {{ colorlabel7 }} balls, <b>10</b> {{ colorlabel8 }} balls, <b>10</b> {{ colorlabel9 }} balls, and <b>10</b> {{ colorlabel10 }} balls{% endif %}.
-    {% endif %}
-    <br><br>
-</p>
+    //Ball Object
+      class Ball {
 
-
-{% comment %}
-<!-- Pie Chart Container -->
-{% if prior == 50 %}
-<div id="urn2" align="center" style="width: 100%; height: 500px;" ></div>
-{% else %}
-<div id="urn10" align="center" style="width: 100%; height: 500px;" ></div>
-{% endif %}
-{% endcomment %}
-
-<!-- graphic Urn -->
-    <style>
-
-
-        .urn{
-        background: linear-gradient(44deg, #a4f2ff, #c8f7ff);
-        width: 262px;
-        height: 304px;
-        border: 6px solid rgb(56, 56, 56);
-        border-bottom-left-radius: 15%;
-        border-bottom-right-radius: 15%;
-        margin: auto;
-        border-top: none;
-        position: relative;
-        box-shadow: 11px 11px 12px 2px rgb(0 0 0 / 5%);
+        constructor(x, y, color,colorName, border, size) {
+           this.x = x;
+           this.y = y;
+           this.color = color;
+           this.colorName = colorName;
+           this.border = border;
         }
+        //Function to "draw" the ball using the details it's object has
+        draw() {
+            const ball = document.createElement('div');
+            ball.classList.add('ball');
+            ball.style.left = this.x + 'px';
+            ball.style.top = this.y + 'px';
+            if(this.border){
+                ball.classList.add('uncolored');
+            }else{
+                ball.classList.add(this.colorName);
+                ball.style.background = this.color;
+            }
+            urnContainer.appendChild(ball);
+          }
+     }
 
-        .ball{
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        border: 1px solid #7e7e7e;
-        box-shadow:inset 3px -4px 8px rgba(255, 255, 255, 0.384), inset -3px 1px 4px rgba(0, 0, 0, 0.404), 0 0 1px #0000003b ;
-        transition: border 0.5s ease;
-        }
+     //A sort of flag to know that the balls are already highlighted, in order to prevent multiple calls to the highlighting function
+     let ballsHighlighted = false;
+     const highlightBalls = function(isColor, colorName) {
+         //If already highlighted, break out
+         if(ballsHighlighted){
+            return;
+         }
+         ballsHighlighted = true;
 
-        .ball:nth-child(4n){
-        z-index: 100;
-        }
+        let ballsToHighlight,
+        className;
 
-        .ball:nth-child(2n){
-        z-index: 50;
-        }
-
-
-        .ball.highlighted{
-        border: 3px solid yellow;
-        z-index: 100;
-        }
-
-        .ball.highlightedAll{
-        border: 2px solid yellow;
-        }
-
-        .ball.uncolored{
-        border-color: #7e7e7e;
-        }
-
-        .ball.uncolored:before{
-            content: '?';
-            width:100%;
-            height:100%;
-            font-size:13px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-        }
-    </style>
-    <div class="urn">
-
-    </div>
-    <script>
-        const urnContainer = document.querySelector('.urn');
-
-//Ball Object
-  class Ball {
-
-    constructor(x, y, color,colorName, border, size) {
-       this.x = x;
-       this.y = y;
-       this.color = color;
-       this.colorName = colorName;
-       this.border = border;
-    }
-    //Function to "draw" the ball using the details it's object has
-    draw() {
-        const ball = document.createElement('div');
-        ball.classList.add('ball');
-        ball.style.left = this.x + 'px';
-        ball.style.top = this.y + 'px';
-        if(this.border){
-            ball.classList.add('uncolored');
+        //Highlight the balls with the specified color
+        if(isColor){
+            ballsToHighlight = urnContainer.querySelectorAll(`.ball.${colorName}`);
+            className = 'highlighted'
+        //Highlight the balls that are NOT of the specified color
         }else{
-            ball.classList.add(this.colorName);
-            ball.style.background = this.color;
+            ballsToHighlight = urnContainer.querySelectorAll(`.ball:not(.${colorName})`);
+            className = 'highlightedAll'
         }
-        urnContainer.appendChild(ball);
-      }
- }
 
- //A sort of flag to know that the balls are already highlighted, in order to prevent multiple calls to the highlighting function
- let ballsHighlighted = false;
- const highlightBalls = function(isColor, colorName) {
-     //If already highlighted, break out
-     if(ballsHighlighted){
-        return;
-     }
-     ballsHighlighted = true;
-
-    let ballsToHighlight,
-    className;
-
-    //Highlight the balls with the specified color
-    if(isColor){
-        ballsToHighlight = urnContainer.querySelectorAll(`.ball.${colorName}`);
-        className = 'highlighted'
-    //Highlight the balls that are NOT of the specified color
-    }else{
-        ballsToHighlight = urnContainer.querySelectorAll(`.ball:not(.${colorName})`);
-        className = 'highlightedAll'
-    }
-
-    for (var i =0;i<ballsToHighlight.length; i++){
-        ballsToHighlight[i].classList.toggle(`${className}`);
-    }
- }
-
- const unhighlightBalls = (isColor, colorName)=>{
-      if(!ballsHighlighted){
-        return;
+        for (var i =0;i<ballsToHighlight.length; i++){
+            ballsToHighlight[i].classList.toggle(`${className}`);
+        }
      }
 
-     let ballsToHighlight,
-    className;
+     const unhighlightBalls = (isColor, colorName)=>{
+          if(!ballsHighlighted){
+            return;
+         }
 
-    //Highlight the balls with the specified color
-    if(isColor){
-        ballsToHighlight = urnContainer.querySelectorAll(`.ball.${colorName}`);
-        className = 'highlighted'
-    //Highlight the balls that are NOT of the specified color
-    }else{
-        ballsToHighlight = urnContainer.querySelectorAll(`.ball:not(.${colorName})`);
-        className = 'highlightedAll'
+         let ballsToHighlight,
+        className;
+
+        //Highlight the balls with the specified color
+        if(isColor){
+            ballsToHighlight = urnContainer.querySelectorAll(`.ball.${colorName}`);
+            className = 'highlighted'
+        //Highlight the balls that are NOT of the specified color
+        }else{
+            ballsToHighlight = urnContainer.querySelectorAll(`.ball:not(.${colorName})`);
+            className = 'highlightedAll'
+        }
+
+        for (var i=0;i<ballsToHighlight.length; i++){
+            ballsToHighlight[i].classList.toggle(`${className}`);
+        }
+        ballsHighlighted = false;
     }
 
-    for (var i=0;i<ballsToHighlight.length; i++){
-        ballsToHighlight[i].classList.toggle(`${className}`);
+     //Balls array, used to later draw each ball object within
+    balls = [];
+
+    let size = 20,
+        yPos = 0,
+        i=0,
+        x=17,
+        y=278,
+        increment = 5;
+
+    while(balls.length<100){
+        //First row of balls is unique, in order to account for the curved section of the jar
+        if(yPos === 0){
+            ball = new Ball(
+            x,
+            y,
+            '#333',
+            'red',
+            true
+        );
+        x+=size+2;
+        //If reached the end of the first row(right side of the jar), go to the next row
+        if(x>220){
+            yPos += 1;
+        }
+        balls.push(ball);
     }
-    ballsHighlighted = false;
-}
-
- //Balls array, used to later draw each ball object within
-balls = [];
-
-let size = 20,
-    yPos = 0,
-    i=0,
-    x=17,
-    y=278,
-    increment = 5;
-
-while(balls.length<100){
-    //First row of balls is unique, in order to account for the curved section of the jar
-    if(yPos === 0){
+    //All other rows
+    else if(yPos >= 1){
+        if(x>=220){
+            yPos +=1;
+            y-=size+2;
+            x=0;
+        }else{
+            x+=size+increment;
+        }
         ball = new Ball(
-        x,
-        y,
-        '#333',
-        'red',
-        true
-    );
-    x+=size+2;
-    //If reached the end of the first row(right side of the jar), go to the next row
-    if(x>220){
-        yPos += 1;
-    }
-    balls.push(ball);
-}
-//All other rows
-else if(yPos >= 1){
-    if(x>=220){
-        yPos +=1;
-        y-=size+2;
-        x=0;
-    }else{
-        x+=size+increment;
-    }
-    ball = new Ball(
-        x,
-        y,
-        '#333',
-        'red',
-        true
-    );
-    balls.push(ball);
+            x,
+            y,
+            '#333',
+            'red',
+            true
+        );
+        balls.push(ball);
+
+        }
 
     }
 
-}
-
-
-
-
-
-//Loop through each ball object in the 'balls' array, in order to "draw" each of them
-function loop() {
-    for (const ball of balls) {
-      ball.draw();
+    //Loop through each ball object in the 'balls' array, in order to "draw" each of them
+    function loop() {
+        for (const ball of balls) {
+          ball.draw();
+        }
     }
- }
 
- //Call to drawing functions
- loop();
+    //Call to drawing functions
+    loop();
 
-
-const allBalls = document.querySelectorAll('.ball'),
+    const allBalls = document.querySelectorAll('.ball'),
     numberOfColors = allColors.length;
 
 
     //Function used in order to get a random color from the array, making sure that the number of balls of the returned color has not already surpassed
     // the possible maximum
-const getRandomColor = function(){
-    let colorToAdd = allColors[Math.floor(Math.random() * numberOfColors)];
-    while(colorToAdd.number>=(100/numberOfColors)){
-        colorToAdd = allColors[Math.floor(Math.random() * numberOfColors)];
-    }
-    colorToAdd.number = `${parseInt(colorToAdd.number)+1}`;
-    return colorToAdd;
-}
-
-
-//Function used to get consecutive colors, in case on wants to fill each row with the same color
-//The colors of each row are still randomized
-let colorIndex =Math.floor(Math.random() * numberOfColors),
-    colorToAdd = allColors[colorIndex];
-const getConsecutiveColors = function(){
-    if(colorToAdd.number>=100/numberOfColors){
-        colorIndex = Math.floor(Math.random() * numberOfColors);
-        colorToAdd = allColors[colorIndex];
+    const getRandomColor = function(){
+        let colorToAdd = allColors[Math.floor(Math.random() * numberOfColors)];
         while(colorToAdd.number>=(100/numberOfColors)){
-            colorIndex = Math.floor(Math.random() * numberOfColors)
-            colorToAdd = allColors[colorIndex];
+            colorToAdd = allColors[Math.floor(Math.random() * numberOfColors)];
         }
+        colorToAdd.number = `${parseInt(colorToAdd.number)+1}`;
+        return colorToAdd;
     }
-    colorToAdd.number = `${parseInt(colorToAdd.number)+1}`;
-    return colorToAdd;
-}
-    </script>
 
-
-
-<br><br>
-
-<p>
-    <u><b>PREDICTED EVENT:</b></u> The randomly drawn ball <a href='#' class="predicted-event"><b>is{% if predictfalse %} NOT{% endif %} {{ colorevent }}</b></a>.
-    <br>
-    <br>
-    What is the chance (out of 100) that a randomly drawn ball <b>is{% if predictfalse %} NOT{% endif %} {{ colorevent }}</b> (i.e., is{% if predicttrue %} <u>not</u> {% endif %} {% if prior != 50 %}{% if predictfalse %}<u>any one</u>{% else %}one{% endif %} of the 9 other colors{% elif prior == 50 %}{% if colorlabel1 != colorevent %}{{ colorlabel1 }}{% elif colorlabel2 != colorevent %}{{ colorlabel2 }}{% endif %}{% endif %})?
-    <br>
-    <br>
-</p>
-
-
+    //Function used to get consecutive colors, in case on wants to fill each row with the same color
+    //The colors of each row are still randomized
+    let colorIndex =Math.floor(Math.random() * numberOfColors),
+        colorToAdd = allColors[colorIndex];
+    const getConsecutiveColors = function(){
+        if(colorToAdd.number>=100/numberOfColors){
+            colorIndex = Math.floor(Math.random() * numberOfColors);
+            colorToAdd = allColors[colorIndex];
+            while(colorToAdd.number>=(100/numberOfColors)){
+                colorIndex = Math.floor(Math.random() * numberOfColors)
+                colorToAdd = allColors[colorIndex];
+            }
+        }
+        colorToAdd.number = `${parseInt(colorToAdd.number)+1}`;
+        return colorToAdd;
+    }
+</script>
 <script>
     if(allColors.length>0){
-    allBalls.forEach(ball =>{
-        ball.classList.remove('uncolored');
-        //If you want random colors, use the following line of code
-        // let colorToAdd = getRandomColor();
-        //Else:
-        let colorToAdd = getConsecutiveColors();
-        let colorName = colorToAdd.color;
-        ball.style.background = colorName.replace(/\s/g, "").toLowerCase();
-        ball.classList.add(colorName.replace(/\s/g, "-").toLowerCase());
-    })
-}
+        allBalls.forEach(ball =>{
+            ball.classList.remove('uncolored');
+            //If you want random colors, use the following line of code
+            // let colorToAdd = getRandomColor();
+            //Else:
+            let colorToAdd = getConsecutiveColors();
+            let colorName = colorToAdd.color;
+            ball.style.background = colorName.replace(/\s/g, "").toLowerCase();
+            ball.classList.add(colorName.replace(/\s/g, "-").toLowerCase());
+        })
+    }
     const predictedEvent = '{{colorevent}}';
     {% if treatrisk %}
         {% if predictfalse %}
@@ -532,32 +281,139 @@ const getConsecutiveColors = function(){
                     unhighlightBalls(true, predictedEvent.replace(/\s/g, "-").toLowerCase());
                 });
             },1000);
-
+        {% endif %}
     {% endif %}
-    {% endif %}
-
-
 </script>
+{{ endblock }}
+
+{{ block styles }}
+<link href="{{ static 'belief-slider.css' }}" rel="stylesheet">
+<style>
+    .tab {
+        display: none;
+        text-align: justify;
+    }
+    .otree-title {
+        text-align: center;
+    }
+    .otree-body{
+        font-size: 103%;
+    }
+    .otree-timer {
+        display: none;
+    }
+</style>
+<style>
+    #active {
+        display: none;
+    }
+    #inactive {
+        display: block;
+    }
+</style>
+<style>
+    .urn{
+    background: linear-gradient(44deg, #a4f2ff, #c8f7ff);
+    width: 262px;
+    height: 304px;
+    border: 6px solid rgb(56, 56, 56);
+    border-bottom-left-radius: 15%;
+    border-bottom-right-radius: 15%;
+    margin: auto;
+    border-top: none;
+    position: relative;
+    box-shadow: 11px 11px 12px 2px rgb(0 0 0 / 5%);
+    }
+
+    .ball{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #7e7e7e;
+    box-shadow:inset 3px -4px 8px rgba(255, 255, 255, 0.384), inset -3px 1px 4px rgba(0, 0, 0, 0.404), 0 0 1px #0000003b ;
+    transition: border 0.5s ease;
+    }
+
+    .ball:nth-child(4n){
+    z-index: 100;
+    }
+
+    .ball:nth-child(2n){
+    z-index: 50;
+    }
+
+
+    .ball.highlighted{
+    border: 3px solid yellow;
+    z-index: 100;
+    }
+
+    .ball.highlightedAll{
+    border: 2px solid yellow;
+    }
+
+    .ball.uncolored{
+    border-color: #7e7e7e;
+    }
+
+    .ball.uncolored:before{
+        content: '?';
+        width:100%;
+        height:100%;
+        font-size:13px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+</style>
+{{ endblock }}
+
+{{ block content }}
+
+<p>
+    {% if treatambiguity %}
+    In this round, the urn consists of <b>100 balls of {% if prior == 50 %}2{% else %}5{% endif %} different colors</b>.
+    <br>
+    Specifically, there are some balls that are {% if prior == 50 %}{{ slicecolor1 }}, and some that are {{ slicecolor2 }}{% else %}{{ slicecolor1 }}, {{ slicecolor2 }}, {{ slicecolor3 }}, {{ slicecolor4 }}, and {{ slicecolor5 }}{% endif %} in color.
+    <br>
+    However, you do <b>not</b> know the exact composition of the urn.
+    {% elif treatrisk %}
+    In this round, the urn consists of <b>100 balls</b>.
+    <br>
+    Specifically, there are {% if prior == 50 %}<b>50</b> {{ slicecolor1 }} and <b>50</b> {{ slicecolor2 }} balls{% else %}<b>20</b> {{ slicecolor1 }} balls, <b>20</b> {{ slicecolor2 }} balls, <b>20</b> {{ slicecolor3 }} balls, <b>20</b> {{ slicecolor4 }} balls, and <b>20</b> {{ slicecolor5 }} balls{% endif %}.
+    {% endif %}
+    <br><br>
+</p>
+
+<div class="urn"></div>
+
+<br><br>
+
+<p>
+    <u><b>PREDICTED EVENT:</b></u> The randomly drawn ball <a href='#' class="predicted-event"><b>is{% if predictfalse %} NOT{% endif %} {{ colorevent }}</b></a>.
+    <br>
+    <br>
+    What is the chance (out of 100) that a randomly drawn ball <b>is{% if predictfalse %} NOT{% endif %} {{ colorevent }}</b> (i.e., is{% if predicttrue %} <u>not</u> {% endif %} {% if prior != 50 %}{% if predictfalse %}<u>any one</u>{% else %}one{% endif %} of the 9 other colors{% elif prior == 50 %}{% if slicecolor1 != colorevent %}{{ slicecolor1 }}{% elif slicecolor2 != colorevent %}{{ slicecolor2 }}{% endif %}{% endif %})?
+    <br>
+    <br>
+</p>
+
 <div align="center">
     <label for="demo1" class="float-left" style="width:300px" align="left">
         <b>
             <span id="demo1"></span>% chance that ball is <br>
             {% if predicttrue %}
                 {% if prior != 50 %}
-                {% if colorlabel1 != colorevent %}{{ colorlabel1 }}, {% endif %}
-                {% if colorlabel2 != colorevent %}{{ colorlabel2 }}, {% endif %}
-                {% if colorlabel3 != colorevent %}{{ colorlabel3 }}, {% endif %}
-                {% if colorlabel4 != colorevent %}{{ colorlabel4 }}, {% endif %}
-                {% if colorlabel5 != colorevent %}{{ colorlabel5 }}, {% endif %}
-                {% if colorlabel6 != colorevent %}{{ colorlabel6 }}, {% endif %}
-                {% if colorlabel7 != colorevent %}{{ colorlabel7 }}, {% endif %}
-                {% if colorlabel8 != colorevent %}{{ colorlabel8 }}, {% endif %}
-                {% if colorlabel10 == colorevent %}or {% endif %}
-                {% if colorlabel9 != colorevent %}{{ colorlabel9 }}, {% endif %}
-                {% if colorlabel10 != colorevent %}or {% endif %}
-                {% if colorlabel10 != colorevent %}{{ colorlabel10 }}{% endif %}.
+                {% if slicecolor1 != colorevent %}{{ slicecolor1 }}, {% endif %}
+                {% if slicecolor2 != colorevent %}{{ slicecolor2 }}, {% endif %}
+                {% if slicecolor3 != colorevent %}{{ slicecolor3 }}, {% endif %}
+                {% if slicecolor5 == colorevent %}or {% endif %}
+                {% if slicecolor4 != colorevent %}{{ slicecolor4 }}, {% endif %}
+                {% if slicecolor5 != colorevent %}or {% endif %}
+                {% if slicecolor5 != colorevent %}{{ slicecolor5 }}{% endif %}.
                 {% elif prior == 50 %}
-                {% if colorlabel1 != colorevent %}{{ colorlabel1 }}{% elif colorlabel2 != colorevent %}{{ colorlabel2 }}{% endif %}.
+                {% if slicecolor1 != colorevent %}{{ slicecolor1 }}{% elif slicecolor2 != colorevent %}{{ slicecolor2 }}{% endif %}.
                 {% endif %}
             {% else %}
             {{ colorevent }}.
@@ -569,20 +425,15 @@ const getConsecutiveColors = function(){
             <span id="demo2"></span>% chance that ball is <br>
             {% if predictfalse %}
                 {% if prior != 50 %}
-                {% if colorlabel1 != colorevent %}{{ colorlabel1 }}, {% endif %}
-                {% if colorlabel2 != colorevent %}{{ colorlabel2 }}, {% endif %}
-                {% if colorlabel3 != colorevent %}{{ colorlabel3 }}, {% endif %}
-                {% if colorlabel4 != colorevent %}{{ colorlabel4 }}, {% endif %}
-                {% if colorlabel5 != colorevent %}{{ colorlabel5 }}, {% endif %}
-                {% if colorlabel6 != colorevent %}{{ colorlabel6 }}, {% endif %}
-                {% if colorlabel7 != colorevent %}{{ colorlabel7 }}, {% endif %}
-                {% if colorlabel8 != colorevent %}{{ colorlabel8 }}, {% endif %}
-                {% if colorlabel10 == colorevent %}or {% endif %}
-                {% if colorlabel9 != colorevent %}{{ colorlabel9 }}, {% endif %}
-                {% if colorlabel10 != colorevent %}or {% endif %}
-                {% if colorlabel10 != colorevent %}{{ colorlabel10 }}{% endif %}.
+                {% if slicecolor1 != colorevent %}{{ slicecolor1 }}, {% endif %}
+                {% if slicecolor2 != colorevent %}{{ slicecolor2 }}, {% endif %}
+                {% if slicecolor3 != colorevent %}{{ slicecolor3 }}, {% endif %}
+                {% if slicecolor5 == colorevent %}or {% endif %}
+                {% if slicecolor4 != colorevent %}{{ slicecolor4 }}, {% endif %}
+                {% if slicecolor5 != colorevent %}or {% endif %}
+                {% if slicecolor5 != colorevent %}{{ slicecolor5 }}{% endif %}.
                 {% elif prior == 50 %}
-                {% if colorlabel1 != colorevent %}{{ colorlabel1 }}{% elif colorlabel2 != colorevent %}{{ colorlabel2 }}{% endif %}.
+                {% if slicecolor1 != colorevent %}{{ slicecolor1 }}{% elif slicecolor2 != colorevent %}{{ slicecolor2 }}{% endif %}.
                 {% endif %}
             {% else %}
             {{ colorevent }}.
