@@ -87,12 +87,19 @@ class Player(BasePlayer):
     treatambiguity = models.BooleanField()
     prior = models.IntegerField()
 
-    # urn composition in round (index)
+    # urn color composition in round (index)
     color1 = models.IntegerField()
     color2 = models.IntegerField()
     color3 = models.IntegerField()
     color4 = models.IntegerField()
     color5 = models.IntegerField()
+
+    # number of each colored balls in round
+    num_color1 = models.IntegerField(initial=0)
+    num_color2 = models.IntegerField(initial=0)
+    num_color3 = models.IntegerField(initial=0)
+    num_color4 = models.IntegerField(initial=0)
+    num_color5 = models.IntegerField(initial=0)
 
     # color index of predicted event
     color_event = models.IntegerField()
@@ -156,7 +163,7 @@ def creating_session(subsession: Subsession):
             player.participant.vars['urn2_color_code1'] = urn2_color_code1
             player.participant.vars['urn2_color_code2'] = urn2_color_code2
 
-        # extract urn composition for each round
+        # extract urn color composition for each round
         player.participant.vars['prior' + str(subsession.round_number)] = player.prior
         if (subsession.round_number <= 3) & (player.prior == 50):
             player.color1 = player.participant.vars['urn2_color_code1'][0]
@@ -176,6 +183,43 @@ def creating_session(subsession: Subsession):
             player.color3 = player.participant.vars['urn5_color_code2'][2]
             player.color4 = player.participant.vars['urn5_color_code2'][3]
             player.color5 = player.participant.vars['urn5_color_code2'][4]
+
+        # determine exact urn composition for each round
+        if player.treatrisk:
+            if player.prior == 50:
+                player.num_color1 = 50
+                player.num_color2 = 50
+            elif player.prior != 50:
+                player.num_color1 = 20
+                player.num_color2 = 20
+                player.num_color3 = 20
+                player.num_color4 = 20
+                player.num_color5 = 20
+        if player.treatambiguity:
+            if player.prior == 50:
+                for x in range(100):
+                    # print(x)
+                    rollindividualball = random.randint(1, 100)
+                    print(rollindividualball)
+                    if rollindividualball <= 50:
+                        player.num_color1 += 1
+                    elif rollindividualball > 50:
+                        player.num_color2 += 1
+            elif player.prior != 50:
+                for x in range(100):
+                    # print(x)
+                    rollindividualball = random.randint(1, 100)
+                    print(rollindividualball)
+                    if rollindividualball <= 20:
+                        player.num_color1 += 1
+                    elif 20 < rollindividualball <= 40:
+                        player.num_color2 += 1
+                    elif 40 < rollindividualball <= 60:
+                        player.num_color3 += 1
+                    elif 60 < rollindividualball <= 80:
+                        player.num_color4 += 1
+                    elif 80 < rollindividualball <= 100:
+                        player.num_color5 += 1
 
         # randomly draw a color for the Event
         if (subsession.round_number <= 3) & (player.prior == 50):
@@ -270,6 +314,11 @@ class Elicitation(Page):
             textcolor3=textcolor3,
             textcolor4=textcolor4,
             textcolor5=textcolor5,
+            numcolor1=player.num_color1,
+            numcolor2=player.num_color2,
+            numcolor3=player.num_color3,
+            numcolor4=player.num_color4,
+            numcolor5=player.num_color5,
             prior=player.prior,
             colorevent=Constants.color_fixed[player.color_event],
             treatambiguity=player.treatambiguity,

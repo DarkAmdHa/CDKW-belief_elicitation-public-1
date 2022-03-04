@@ -381,7 +381,7 @@ slider.oninput = function() {
     {% elif treatrisk %}
     In this round, the urn consists of <b>100 balls</b>.
     <br>
-    Specifically, there are {% if prior == 50 %}<b>50</b> {{ slicecolor1 }} and <b>50</b> {{ slicecolor2 }} balls{% else %}<b>20</b> {{ slicecolor1 }} balls, <b>20</b> {{ slicecolor2 }} balls, <b>20</b> {{ slicecolor3 }} balls, <b>20</b> {{ slicecolor4 }} balls, and <b>20</b> {{ slicecolor5 }} balls{% endif %}.
+    Specifically, there are {% if prior == 50 %}<b>{{ numcolor1 }}</b> {{ slicecolor1 }} and <b>{{ numcolor2 }}</b> {{ slicecolor2 }} balls{% else %}<b>{{ numcolor1 }}</b> {{ slicecolor1 }} balls, <b>{{ numcolor2 }}</b> {{ slicecolor2 }} balls, <b>{{ numcolor3 }}</b> {{ slicecolor3 }} balls, <b>{{ numcolor4 }}</b> {{ slicecolor4 }} balls, and <b>{{ numcolor5 }}</b> {{ slicecolor5 }} balls{% endif %}.
     {% endif %}
     <br><br>
 </p>
