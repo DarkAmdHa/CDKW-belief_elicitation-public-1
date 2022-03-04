@@ -200,7 +200,7 @@ def creating_session(subsession: Subsession):
                 for x in range(100):
                     # print(x)
                     rollindividualball = random.randint(1, 100)
-                    print(rollindividualball)
+                    # print(rollindividualball)
                     if rollindividualball <= 50:
                         player.num_color1 += 1
                     elif rollindividualball > 50:
@@ -209,7 +209,7 @@ def creating_session(subsession: Subsession):
                 for x in range(100):
                     # print(x)
                     rollindividualball = random.randint(1, 100)
-                    print(rollindividualball)
+                    # print(rollindividualball)
                     if rollindividualball <= 20:
                         player.num_color1 += 1
                     elif 20 < rollindividualball <= 40:
