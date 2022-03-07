@@ -104,16 +104,24 @@ slider.oninput = function() {
          ballsHighlighted = true;
 
         let ballsToHighlight,
+            rowToHighlight,
         className;
 
         //Highlight the balls with the specified color
         if(isColor){
             ballsToHighlight = urnContainer.querySelectorAll(`.ball.${colorName}`);
+            rowToHighlight = urnContainer.querySelector(`.color-row.${colorName}`);
             className = 'highlighted'
+
+            rowToHighlight.classList.toggle(`${className}`);
         //Highlight the balls that are NOT of the specified color
         }else{
             ballsToHighlight = urnContainer.querySelectorAll(`.ball:not(.${colorName})`);
-            className = 'highlightedAll'
+            rowToHighlight = urnContainer.querySelectorAll(`.color-row:not(.${colorName})`);
+            className = 'highlightedAll';
+            for (var i =0;i<rowToHighlight.length; i++){
+                rowToHighlight[i].classList.toggle(`${className}`);
+            }
         }
 
         for (var i =0;i<ballsToHighlight.length; i++){
@@ -127,16 +135,25 @@ slider.oninput = function() {
          }
 
          let ballsToHighlight,
-        className;
+             rowToHighlight,
+            className;
 
         //Highlight the balls with the specified color
         if(isColor){
             ballsToHighlight = urnContainer.querySelectorAll(`.ball.${colorName}`);
+            rowToHighlight = urnContainer.querySelector(`.color-row.${colorName}`);
             className = 'highlighted'
+
+            rowToHighlight.classList.toggle(`${className}`);
+
         //Highlight the balls that are NOT of the specified color
         }else{
             ballsToHighlight = urnContainer.querySelectorAll(`.ball:not(.${colorName})`);
-            className = 'highlightedAll'
+            rowToHighlight = urnContainer.querySelectorAll(`.color-row:not(.${colorName})`);
+            className = 'highlightedAll';
+            for (var i =0;i<rowToHighlight.length; i++){
+                rowToHighlight[i].classList.toggle(`${className}`);
+            }
         }
 
         for (var i=0;i<ballsToHighlight.length; i++){
@@ -248,6 +265,17 @@ slider.oninput = function() {
             ball.style.background = colorName.replace(/\s/g, "").toLowerCase();
             ball.classList.add(colorName.replace(/\s/g, "-").toLowerCase());
         })
+        //Set left column rows positions
+        let leftColumnRows = document.querySelectorAll('.color-row'),
+        colorBefore ='blank';
+        for(let i = leftColumnRows.length-1;i>=0;i--){
+            leftColumnRows[i].style.top = `${allBalls[i*10].offsetTop - 3}px`;
+            if(allBalls[i*10].style.background != '' && colorBefore != allBalls[i*10].style.background){
+                leftColumnRows[i].innerText = `${document.querySelectorAll('.' + allBalls[i*10].style.background).length} ${allBalls[i*10].style.background} balls`;
+                leftColumnRows[i].classList.add(`${allBalls[i*10].style.background}`)
+                colorBefore = allBalls[i*10].style.background;
+            }
+        }
     }
     const predictedEvent = '{{colorevent}}';
     {% if treatrisk %}
@@ -283,6 +311,13 @@ slider.oninput = function() {
             },1000);
         {% endif %}
     {% endif %}
+
+    const sliders = document.querySelectorAll('.slider');
+    for(let i = 0;i<sliders.length;i++){
+    sliders[i].addEventListener('mousedown', ()=>{
+        sliders[i].classList.remove('slider-thumb-hidden');
+    });
+    }
 </script>
 {{ endblock }}
 
@@ -366,6 +401,33 @@ slider.oninput = function() {
         align-items:center;
         justify-content:center;
     }
+
+    .left-column{
+    position: relative;
+    left: -260px;
+    height: 100%;
+    bottom: 0;
+    text-align: right;
+    }
+
+    .color-row{
+    position: absolute;
+    width: 100%;
+    transition: all 0.5s ease;
+    }
+
+    .color-row.highlighted,
+    .color-row.highlightedAll{
+        color: rgb(242 215 36);
+        transform: translateX(-15px) scale(1.1);
+    }
+    .slider::-webkit-slider-thumb{
+        transition: opacity 0.5s ease;
+    }
+
+    .slider-thumb-hidden::-webkit-slider-thumb{
+        opacity: 0;
+    }
 </style>
 {{ endblock }}
 
@@ -386,7 +448,21 @@ slider.oninput = function() {
     <br><br>
 </p>
 
-<div class="urn"></div>
+<div class="urn">
+      <div class="left-column">
+        <div class="color-row row-1"></div>
+        <div class="color-row row-2"></div>
+        <div class="color-row row-3"></div>
+        <div class="color-row row-4"></div>
+        <div class="color-row row-5"></div>
+        <div class="color-row row-6"></div>
+        <div class="color-row row-7"></div>
+        <div class="color-row row-8"></div>
+        <div class="color-row row-9"></div>
+        <div class="color-row row-10"></div>
+      </div>
+
+</div>
 
 <br><br>
 
@@ -442,7 +518,7 @@ slider.oninput = function() {
     </label>
 
     <div class="slidecontainer">
-        <input type="range" min="0" max="100" step="1" value="-1" class="slider" id="myRange" name="belief">
+        <input type="range" min="0" max="100" step="1" value="-1" class="slider slider-thumb-hidden" id="myRange" name="belief">
     </div>
     <br>
 </div>
