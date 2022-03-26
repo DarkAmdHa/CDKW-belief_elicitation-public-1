@@ -4,7 +4,7 @@ SESSION_CONFIG_DEFAULTS = dict(
 )
 SESSION_CONFIGS = [
     dict(
-        name='Test_BSR',
+        name='Urn_Task',
         app_sequence=[
             'belief_task',
         ],
@@ -22,9 +22,9 @@ SESSION_CONFIGS = [
         audio=True,
     ),
     dict(
-        name='Test_QSR',
+        name='Choice_List',
         app_sequence=[
-            'belief_task',
+            'risk_elicitation',
         ],
         num_demo_participants=2,
         showupfee=4,

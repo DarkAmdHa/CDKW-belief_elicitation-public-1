@@ -9,14 +9,28 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
 var slider = document.getElementById("myRange");
-var output2 = document.getElementById("demo2");
-var output1 = document.getElementById("demo1");
-<!--output2.innerHTML = slider.value;-->
-<!--output1.innerHTML = slider.value;-->
+var minvalue = document.getElementById("min");
+var maxvalue = document.getElementById("max");
+var beliefvalue = {{ belief }};
 
 slider.oninput = function() {
-  output2.innerHTML = this.value;
-  output1.innerHTML = 100-this.value;
+  minvalue.innerHTML = beliefvalue-(30-this.value);
+  maxvalue.innerHTML = beliefvalue+(30-this.value);
+  if (minvalue.innerHTML<0) {
+    minvalue.innerHTML=0;
+  }
+  if (maxvalue.innerHTML>100) {
+    maxvalue.innerHTML=100;
+  }
+  if (this.value==30) {
+    certain.style.display = "block";
+    uncertain.style.display = "none";
+  }
+  if (this.value!=30) {
+    certain.style.display = "none";
+    uncertain.style.display = "block";
+  }
+  instruction.style.display = "none";
   active.style.display = "block";
   inactive.style.display = "none";
 }
@@ -339,6 +353,15 @@ slider.oninput = function() {
     }
 </style>
 <style>
+    #instruction {
+        display: block;
+    }
+    #certain {
+        display: none;
+    }
+    #uncertain {
+        display: none;
+    }
     #active {
         display: none;
     }
@@ -493,9 +516,9 @@ a:active {
 <br><br>
 
 <p>
-    <u><b>PREDICTED EVENT:</b></u> The randomly drawn ball <a href='#' class="predicted-event"><b>is
-    {% if predicttrue %}<b>{{ colorevent }}</b>.{% endif %}
-    {% if predictfalse %}<b>either
+    In the previous screen, you stated that there is a <font size="+2"><b>{{ belief }}% chance</b></font> that a randomly drawn ball is
+    {% if predicttrue %}{{ colorevent }}.{% endif %}
+    {% if predictfalse %}either
         {% if slicecolor1 != colorevent %}{{ slicecolor1 }}, {% endif %}
         {% if slicecolor2 != colorevent %}{{ slicecolor2 }}, {% endif %}
         {% if slicecolor3 != colorevent %}{{ slicecolor3 }}, {% endif %}
@@ -503,94 +526,48 @@ a:active {
             {% if slicecolor5 == colorevent %}or {{ slicecolor4 }}.{% endif %}
             {% if slicecolor5 != colorevent %}{{ slicecolor4 }}, {% endif %}
         {% endif %}
-        {% if slicecolor5 != colorevent %}or {{ slicecolor5 }}.{% endif %}</b>
-    {% endif %}</b></a>
-    <br>
-    <br>
-    What is the chance (out of 100) that a randomly drawn ball is
-    {% if predicttrue %}{{ colorevent }}?{% endif %}
-    {% if predictfalse %}either
-        {% if slicecolor1 != colorevent %}{{ slicecolor1 }}, {% endif %}
-        {% if slicecolor2 != colorevent %}{{ slicecolor2 }}, {% endif %}
-        {% if slicecolor3 != colorevent %}{{ slicecolor3 }}, {% endif %}
-        {% if slicecolor4 != colorevent %}
-            {% if slicecolor5 == colorevent %}or {{ slicecolor4 }}?{% endif %}
-            {% if slicecolor5 != colorevent %}{{ slicecolor4 }}, {% endif %}
-        {% endif %}
-        {% if slicecolor5 != colorevent %}or {{ slicecolor5 }}?{% endif %}
+        {% if slicecolor5 != colorevent %}or {{ slicecolor5 }}.{% endif %}
     {% endif %}
+    <br><br>
+    <b>Remember that {% if bsr %}your chance of receiving &euro;{{ stakes }} depends on the accuracy of your prediction.{% else %}your payoff depends on the accuracy of your prediction.{% endif %}</b>
     <br>
-    <br>
+    Given the payment mechanism, how <b>certain</b> are you that {{ belief }}% is the <b>optimal answer</b> to give?
 </p>
 
-<div align="center">
-    <label for="demo1" class="float-left" style="width:300px" align="left">
-        <b>
-            <span id="demo1"></span>% chance that ball is <br>
-            {% if predicttrue %}
-                {% if prior != 50 %}
-                    {% if slicecolor1 != colorevent %}{{ slicecolor1 }}, {% endif %}
-                    {% if slicecolor2 != colorevent %}{{ slicecolor2 }}, {% endif %}
-                    {% if slicecolor3 != colorevent %}{{ slicecolor3 }}, {% endif %}
-                    {% if slicecolor4 != colorevent %}
-                        {% if slicecolor5 == colorevent %}or {{ slicecolor4 }}.{% endif %}
-                        {% if slicecolor5 != colorevent %}{{ slicecolor4 }}, {% endif %}
-                    {% endif %}
-                    {% if slicecolor5 != colorevent %}or {{ slicecolor5 }}.{% endif %}
-                {% elif prior == 50 %}
-                    {% if slicecolor1 != colorevent %}{{ slicecolor1 }}{% elif slicecolor2 != colorevent %}{{ slicecolor2 }}{% endif %}.
-                {% endif %}
-            {% else %}
-            {{ colorevent }}.
-            {% endif %}
-        </b>
-    </label>
-    <label for="demo2" class="float-right" style="width:300px" align="right">
-        <b>
-            <span id="demo2"></span>% chance that ball is <br>
-            {% if predictfalse %}
-                {% if prior != 50 %}
-                    {% if slicecolor1 != colorevent %}{{ slicecolor1 }}, {% endif %}
-                    {% if slicecolor2 != colorevent %}{{ slicecolor2 }}, {% endif %}
-                    {% if slicecolor3 != colorevent %}{{ slicecolor3 }}, {% endif %}
-                    {% if slicecolor4 != colorevent %}
-                        {% if slicecolor5 == colorevent %}or {{ slicecolor4 }}.{% endif %}
-                        {% if slicecolor5 != colorevent %}{{ slicecolor4 }}, {% endif %}
-                    {% endif %}
-                    {% if slicecolor5 != colorevent %}or {{ slicecolor5 }}.{% endif %}
-                {% elif prior == 50 %}
-                    {% if slicecolor1 != colorevent %}{{ slicecolor1 }}{% elif slicecolor2 != colorevent %}{{ slicecolor2 }}{% endif %}.
-                {% endif %}
-            {% else %}
-            {{ colorevent }}.
-            {% endif %}
-        </b>
-    </label>
-
+<center>
+    <label for="myRange" class="float-left" style="width:300px" align="left"><b>Very uncertain</b></label>
+    <label for="myRange" class="float-right" style="width:300px" align="right"><b>Completely certain</b></label>
     <div class="slidecontainer">
-        <input type="range" min="0" max="100" step="1" value="-1" class="slider slider-thumb-hidden" id="myRange" name="belief">
+        <input type="range" min="0" max="30" step="1" value="-1" class="slider slider-thumb-hidden" id="myRange" name="cognitive_certainty">
     </div>
-    <br>
+</center>
+<br>
+
+<div id="instruction">
+    Please adjust the slider.
+</div>
+<div id="certain">
+    I am certain that the optimal guess is <b>exactly {{ belief }}%</b>.
+</div>
+<div id="uncertain">
+    I am certain that the optimal guess is <b>between <span id="min"></span>% and <span id="max"></span>%</b>.
 </div>
 
-
-<p style="align: left">
-    <b>Reminder: {% if bsr %}Your chance of receiving &euro;{{ stakes }} will depend on the accuracy of your prediction.{% else %}Your payoff will depend on the accuracy of your prediction.{% endif %}</b>
-</p>
-
-<br>
-<br>
-
-<div class="button" align="center" id="active">
-    <button class="btn btn-danger mb-3">
-        SUBMIT
+<div class="button" align="right" id="active">
+    <br><br>
+    <button class="btn btn-primary mb-3">
+        NEXT
     </button>
 </div>
 
-<div class="button" align="center" id="inactive">
+<div class="button" align="right" id="inactive">
+    <br><br>
     <button class="btn btn-secondary disabled mb-3">
-        SUBMIT
+        NEXT
     </button>
 </div>
+
+</p>
 
 {{ endblock }}
+

@@ -1,0 +1,508 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+{{ block title }}Part B - Table {{ player.round_number }} {{ endblock }}
+
+{{ block styles }}
+<style>
+    .tab {
+        display: none;
+        text-align: justify;
+    }
+    .otree-title {
+        text-align: center;
+    }
+    .otree-body{
+        font-size: 103%;
+    }
+    .otree-timer {
+        display: none;
+    }
+</style>
+<style>
+  .slidecontainer {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      width: 100%;
+    }
+    .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 100%;
+      border-radius: 5px;
+      background: #d3d3d3;
+      outline: none;
+      opacity: 0.7;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+    }
+    .slider:hover {
+      opacity: 1;
+    }
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: #4CAF50;
+      cursor: pointer;
+    }
+    .slider::-moz-range-thumb {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: #4CAF50;
+      cursor: pointer;
+    }
+    .vranger {
+       margin-top: 50px;
+       transform: rotate(270deg);
+      -moz-transform: rotate(270deg); /*do same for other browsers if required*/
+    }
+</style>
+<style>
+    aside  {
+      width: 600px;
+      height: 600px;
+      background: none;
+      overflow:auto;
+      min-height: 0;
+      transition-property: width;
+      transition-duration: 0.2s;
+      transition-timing-function: linear;
+    }
+</style>
+<style>
+    .checkboxgroup {
+    display: inline-block;
+    text-align: center;
+      margin-top: 7px
+    }
+    .checkboxgroup input[type='radio'] {
+        height: 17px;
+        width: 17px;
+        vertical-align: middle;
+    }
+    .checkboxgroup button {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px
+    }
+    .div1 {
+      float: left;
+      text-align: left;
+    }
+
+    .div2 {
+      float:right;
+      text-align: right;
+    }
+    .main {
+        width: 90%
+    }
+</style>
+<style>
+/* The checkcontainer */
+    .checkcontainer {
+      display: block;
+      position: relative;
+      padding-left: 35px;
+      margin-top: 3px;
+      margin-bottom: 0px;
+      cursor: pointer;
+      font-size: 10px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    /* Hide the browser's default checkbox */
+    .checkcontainer input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+    /* Create a custom checkbox */
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 15px;
+      width: 15px;
+      background-color: #eee;
+    }
+    /* On mouse-over, add a grey background color */
+    .checkcontainer:hover input ~ .checkmark {
+      background-color: #ccc;
+    }
+    /* When the checkbox is checked, add a green background */
+    .checkcontainer input:checked ~ .checkmark {
+      background-color: #4CAF50;
+    }
+    /* Create the checkmark/indicator (hidden when not checked) */
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+    /* Show the checkmark when checked */
+    .checkcontainer input:checked ~ .checkmark:after {
+      display: block;
+    }
+    /* Style the checkmark/indicator */
+    .checkcontainer .checkmark:after {
+      left: 5px;
+      top: 2px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 3px 3px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+    }
+</style>
+<style>
+    * {
+      box-sizing: border-box;
+    }
+    /* Create two unequal columns that floats next to each other */
+    .column {
+      float: left;
+      padding: 10px;
+    }
+    .left {
+      width: 30%;
+    }
+    .right {
+      width: 60%;
+    }
+    /* Clear floats after the columns */
+    .row:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+</style>
+<style>
+    .table {
+        font-size: 15px
+    }
+    .table td{
+        padding: 1px
+    }
+</style>
+<style>
+    #active {
+        display: none;
+    }
+    #inactive {
+        display: block;
+    }
+</style>
+<style>
+    .slider::-webkit-slider-thumb{
+        transition: opacity 0.5s ease;
+    }
+
+    .slider-thumb-hidden::-webkit-slider-thumb{
+        opacity: 0;
+    }
+</style>
+<style>
+input[type=checkbox] {
+    position: relative;
+    cursor: pointer;
+}
+input[type=checkbox]::before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 0;
+    left: 0;
+    background-color:#e9e9e9;
+}
+input[type=checkbox]:checked:before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 0;
+    left: 0;
+    background-color:#1E80EF;
+}
+input[type=checkbox]:checked:after {
+    content: "";
+    display: block;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+    position: absolute;
+    top: 2px;
+    left: 6px;
+}
+</style>
+{{ endblock }}
+
+{{ block scripts }}
+<!--Show slider button on first adjustment-->
+<script>
+    const sliders = document.querySelectorAll('.slider');
+    for(let i = 0;i<sliders.length;i++){
+    sliders[i].addEventListener('mousedown', ()=>{
+        sliders[i].classList.remove('slider-thumb-hidden');
+    });
+    }
+</script>
+<!--Update table on load-->
+<script>
+    window.onload = function () {
+        document.getElementById("demo").innerHTML = '<b>Please adjust <br>' + 'the slider.</b><br><br>';
+
+        var elements1 = document.getElementsByName('optleft');
+        var elements2 = document.getElementsByName('optright');
+        for (i = 0; i < elements1.length; i++) {
+            elements1[i].checked = false;
+        }
+        for (i = 0; i < elements2.length; i++) {
+            elements2[i].checked = false;
+        }
+        $('#check_cutoff').val(1);
+    }
+</script>
+<!--Update table when slider is adjusted -->
+<script>
+    $(document).ready(function () {
+    	$('input[name=risk_cutoff]').on('input', function() {
+    	    var left = $(this).val();
+    	    var right = parseInt(left)+1;
+
+    	    var b = parseFloat({{ stakes }}-(left-1)/2).toFixed(2);
+
+    	    active.style.display = "block";
+            inactive.style.display = "none";
+
+    	    if (left==0) {
+    	        document.getElementById("demo").innerHTML = 'Always choose <br>' + 'Option B.<br><br>';
+            }
+            else if (left==30) {
+                document.getElementById("demo").innerHTML = 'Always choose <br>' + 'Option A.<br><br>';
+            }
+        	else {
+        	    document.getElementById("demo").innerHTML = 'Choose Option A if it pays<br> <b>at least \u20ac' + b + '</b> for sure.<br>Otherwise, choose Option B.';
+        	}
+        	$('#check_cutoff').val(1);
+    	});
+    });
+	$(document).ready(function () {
+    	$('input[name=risk_cutoff]').on('input', function() {
+            var cutoffjs = parseInt($(this).val(), 10);
+            var elements1 = document.getElementsByName('optleft');
+            var elements2 = document.getElementsByName('optright');
+            for (i = 0; i < elements1.length; i++) {
+                elements1[i].checked = false;
+                if (elements1[i].value <= cutoffjs) {
+                    elements1[i].checked = true;
+                    }
+                }
+            for (i = 0; i < elements2.length; i++) {
+                elements2[i].checked = false;
+                if (elements2[i].value > cutoffjs) {
+                    elements2[i].checked = true;
+                    }
+                }
+                $('#check_cutoff').val(1);
+            });
+    });
+</script>
+<!--Update table when a checkbox is updated -->
+<script>
+    $(document).ready(function () {
+        $('input[type="checkbox"]').change(function() {
+            var idleft = parseInt(this.id,10);
+            var idright = idleft-30;
+            var slider = document.getElementById('risk_cutoff');
+            var slidervalue = document.getElementById("risk_cutoff").value;
+            var elements1 = document.getElementsByName('optleft');
+            var elements2 = document.getElementsByName('optright');
+
+<!--            Checkbox in left column triggered-->
+            if (idright < 0) {
+
+                }
+<!--            Checkbox in right column triggered-->
+            if (idright >= 0) {
+                alert ("right " + idright + " " + slidervalue);
+
+                }
+        });
+    });
+</script>
+<!--Populate table-->
+<script>
+    for (var a=1; a < 31; a++) {
+        var table1 = document.getElementById('table_iterator');
+        var rowrow = document.createElement('tr');
+
+        for (i=0; i <1; i++) {
+            var rownum = a;
+            var b = parseFloat({{ stakes }}-(a-1)/2).toFixed(2);
+
+            var cell1 = document.createElement('td');
+            var text1 = document.createTextNode(rownum);
+
+            var cell2 = document.createElement('td');
+            var text2a = document.createTextNode('Receive \u20ac' + b + ' for sure');
+            var text2b = document.createElement('br');
+            var text2c = document.createTextNode('');
+
+            var cell3a = document.createElement('td');
+
+            var cell3b = document.createElement('label');
+            cell3b.classList.add("checkcontainer");
+
+            var cell3c = document.createElement('input');
+            cell3c.setAttribute("type", "checkbox");
+            cell3c.setAttribute("name", "optleft");
+            cell3c.setAttribute("value", a);
+<!--            cell3c.setAttribute("disabled", "");-->
+            cell3c.setAttribute("id", a);
+
+            var cell3d = document.createElement('span');
+            cell3d.classList.add("checkmark");
+
+            var cell4 = document.createElement('td');
+            var text4 = document.createTextNode('');
+
+            var cell5 = document.createElement('td');
+            var text5a = document.createTextNode('Receive \u20ac{{ stakes }} with {{ risk_prob }}% chance');
+            var text5b = document.createElement('br');
+            var text5c = document.createTextNode('Receive \u20ac0 with {{ risk_prob_invert }}% chance');
+
+            var cell6a = document.createElement('td');
+
+            let cell6b = document.createElement('label');
+            cell6b.classList.add("checkcontainer");
+
+            var cell6c = document.createElement('input');
+            cell6c.setAttribute("type", "checkbox");
+            cell6c.setAttribute("name", "optright");
+            cell6c.setAttribute("value", a);
+<!--            cell6c.setAttribute("disabled", "");-->
+            cell6c.setAttribute("id", 30+a);
+
+            let cell6d = document.createElement('span');
+            cell6d.classList.add("checkmark");
+
+            cell1.appendChild(text1);
+            rowrow.appendChild(cell1);
+
+            cell2.appendChild(text2a);
+            cell2.appendChild(text2b);
+            cell2.appendChild(text2c);
+            rowrow.appendChild(cell2);
+
+            cell3a.appendChild(cell3b);
+            cell3a.appendChild(cell3c);
+            cell3a.appendChild(cell3d);
+            rowrow.appendChild(cell3a);
+
+            cell4.appendChild(text4);
+            rowrow.appendChild(cell4);
+
+            cell5.appendChild(text5a);
+            cell5.appendChild(text5b);
+            cell5.appendChild(text5c);
+            rowrow.appendChild(cell5);
+
+            cell6a.appendChild(cell6b);
+            cell6a.appendChild(cell6c);
+            cell6a.appendChild(cell6d);
+            rowrow.appendChild(cell6a);
+        }
+        table1.appendChild(rowrow);
+    }
+</script>
+<!--Make scrollbar in table move with slider-->
+<script>
+    $(document).ready(function () {
+    	$('input[name=risk_cutoff]').on('input', function() {
+            var panel = document.getElementById('scrolling-container');
+            var total = panel.scrollHeight - panel.offsetHeight;
+            var percentage = total*(this.value/30);
+            panel.scrollTop = percentage;
+        });
+    });
+</script>
+{{ endblock }}
+
+{{ block content }}
+
+<p>
+    For this table, please note that:
+    <br>
+    <font size="+2"><b>Option B yields &euro;15 with a {{ risk_prob }}% chance and &euro;0 with a {{ risk_prob_invert }}% chance</b>.</font>
+    <br><br>
+    Please use the slider below to adjust your decisions in the table.
+</p>
+<br>
+
+<center>
+    <div class="row">
+        <div class="column left">
+            <p id="demo"></p>
+            <br><br><br><br><br><br>
+            <div class="slidecontainer vranger">
+                <input type="range" id="risk_cutoff" name="risk_cutoff" value="0" max="30" min="0" step="1" class="slider slider-thumb-hidden" onclick="document.getElementById('Confirm').style.display = 'block';document.getElementById('Confirm-text').style.display = 'block'">
+            </div>
+        </div>
+
+        <div class="column right">
+            <aside id="scrolling-container">
+                <div>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th width="5%">#</th>
+                                <th width="40%">Option A</th>
+                                <th width="5%"></th>
+                                <th width="5%"></th>
+                                <th width="40%">Option B</th>
+                                <th width="5%"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_iterator">
+
+                        </tbody>
+                    </table>
+                </div>
+            </aside>
+        </div>
+    </div>
+</center>
+
+<br><br>
+
+<div class="button" align="center" id="active">
+    <button class="btn btn-danger mb-3">
+        SUBMIT
+    </button>
+</div>
+
+<div class="button" align="center" id="inactive">
+    <button class="btn btn-secondary disabled mb-3">
+        SUBMIT
+    </button>
+</div>
+
+{{ endblock }}
