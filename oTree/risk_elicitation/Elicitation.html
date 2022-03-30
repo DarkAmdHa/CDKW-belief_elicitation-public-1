@@ -327,26 +327,24 @@ input[type=checkbox]:checked:after {
 </script>
 <!--Update table when a checkbox is updated -->
 <script>
-    $(document).ready(function () {
-        $('input[type="checkbox"]').change(function() {
-            var idleft = parseInt(this.id,10);
-            var idright = idleft-30;
-            var slider = document.getElementById('risk_cutoff');
-            var slidervalue = document.getElementById("risk_cutoff").value;
-            var elements1 = document.getElementsByName('optleft');
-            var elements2 = document.getElementsByName('optright');
+    // $(document).ready(function () {
+    //     $('input[type="checkbox"]').change(function() {
+    //         var idleft = parseInt(this.id,10);
+    //         var idright = idleft-30;
+    //         var slider = document.getElementById('risk_cutoff');
+    //         var slidervalue = document.getElementById("risk_cutoff").value;
+    //         var elements1 = document.getElementsByName('optleft');
+    //         var elements2 = document.getElementsByName('optright');
 
-<!--            Checkbox in left column triggered-->
-            if (idright < 0) {
+    //         if (idright < 0) {
 
-                }
-<!--            Checkbox in right column triggered-->
-            if (idright >= 0) {
-                alert ("right " + idright + " " + slidervalue);
+    //             }
+    //         if (idright >= 0) {
+    //             alert ("right " + idright + " " + slidervalue);
 
-                }
-        });
-    });
+    //             }
+    //     });
+    // });
 </script>
 <!--Populate table-->
 <script>
@@ -432,6 +430,105 @@ input[type=checkbox]:checked:after {
         }
         table1.appendChild(rowrow);
     }
+
+
+    const leftOptions = document.querySelectorAll("input[name='optleft']");
+    const rightOptions = document.querySelectorAll("input[name='optright']");
+
+    leftOptions.forEach((option,index)=>{
+        option.addEventListener('change', e=>{
+
+            /* Ressource intensive way to go about it*/
+
+            // if(e.target.checked){
+                // for(let i = 0; i< index;i++){
+                //     leftOptions[i].checked = true;
+                // }
+                // rightOptions.forEach(option=>option.checked = false)
+                // for(let y = index+1; y< rightOptions.length ;y++){
+                //     rightOptions[y].checked = true;
+                // }
+
+                            // }
+            // else{
+                // for(let i = index+1; i< leftOptions.length ;i++){
+                //     leftOptions[i].checked = false;
+                // }
+                // for(let y = index; y< rightOptions.length;y++){
+                //     rightOptions[y].checked = true;
+                // }
+            // }
+
+            /*Smarter Solution, by using the slider's already coded event handler*/
+
+            //Set the appropriate slider value:
+
+            document.querySelector('#risk_cutoff').value = `${index+1}`;
+
+            //Create Custom 'input' event:
+
+                var event = new Event('input', {
+                    bubbles: true,
+                    cancelable: true,
+                });
+            //Trigger the custom event on the slider:
+
+            document.querySelector('#risk_cutoff').dispatchEvent(event);
+
+            //Display the thumb of the slider:
+
+            document.querySelector('#risk_cutoff').classList.remove('slider-thumb-hidden')
+
+            
+        })
+    })
+
+
+    rightOptions.forEach((option,index)=>{
+        option.addEventListener('change', e=>{
+            /* Ressource intensive way to go about it*/
+
+            // if(e.target.checked){
+            //     for(let i = rightOptions.length-1; i> index ;i--){
+            //         rightOptions[i].checked = true;
+            //     }
+            //     leftOptions.forEach(option=>option.checked = false)
+            //     for(let y = 0; y< index;y++){
+            //         leftOptions[y].checked = true;
+            //     }
+            // }
+            // else{
+            //     for(let i=index;i>=0;i--){
+            //         rightOptions[i].checked = false;
+            //     }
+            //     for(let y=0;y<=index;y++){
+            //         leftOptions[y].checked = true;
+            //     }
+
+            // }
+
+            /*Smarter Solution, by using the slider's already coded event handler*/
+
+            //Set the appropriate slider value:
+
+            document.querySelector('#risk_cutoff').value = `${index}`;
+
+            //Create Custom 'input' event:
+
+                var event = new Event('input', {
+                    bubbles: true,
+                    cancelable: true,
+                });
+            //Trigger the custom event on the slider:
+
+            document.querySelector('#risk_cutoff').dispatchEvent(event);
+
+            //Display the thumb of the slider:
+
+            document.querySelector('#risk_cutoff').classList.remove('slider-thumb-hidden')
+        })
+    })
+
 </script>
 <!--Make scrollbar in table move with slider-->
 <script>
