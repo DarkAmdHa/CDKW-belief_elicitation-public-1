@@ -250,13 +250,28 @@ slider.oninput = function() {
         return colorToAdd;
     }
 
-    //Function used to get consecutive colors, in case on wants to fill each row with the same color
-    //The colors of each row are still randomized
-    let colorIndex =Math.floor(Math.random() * numberOfColors),
+    // //Function used to get consecutive colors, in case on wants to fill each row with the same color
+    // //The colors of each row are still randomized
+    // let colorIndex =Math.floor(Math.random() * numberOfColors),
+    //     colorToAdd = allColors[colorIndex];
+    // const getConsecutiveColors = function(){
+    //     if(colorToAdd.number>=100/numberOfColors){
+    //         colorIndex = Math.floor(Math.random() * numberOfColors);
+    //         colorToAdd = allColors[colorIndex];
+    //         while(colorToAdd.number>=(100/numberOfColors)){
+    //             colorIndex = Math.floor(Math.random() * numberOfColors)
+    //             colorToAdd = allColors[colorIndex];
+    //         }
+    //     }
+    //     colorToAdd.number = `${parseInt(colorToAdd.number)+1}`;
+    //     return colorToAdd;
+    // }
+
+    let colorIndex = 0,
         colorToAdd = allColors[colorIndex];
     const getConsecutiveColors = function(){
         if(colorToAdd.number>=100/numberOfColors){
-            colorIndex = Math.floor(Math.random() * numberOfColors);
+            colorIndex++;
             colorToAdd = allColors[colorIndex];
             while(colorToAdd.number>=(100/numberOfColors)){
                 colorIndex = Math.floor(Math.random() * numberOfColors)
@@ -332,6 +347,7 @@ slider.oninput = function() {
         sliders[i].classList.remove('slider-thumb-hidden');
     });
     }
+    console.log('asd')
 </script>
 {{ endblock }}
 
