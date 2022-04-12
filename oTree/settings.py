@@ -20,6 +20,7 @@ SESSION_CONFIGS = [
         full_screen=True,
         live_ping=False,
         audio=True,
+        numballs=100,
     ),
     # dict(
     #     name='Choice_List',
@@ -38,6 +39,7 @@ SESSION_CONFIGS = [
     #     full_screen=True,
     #     live_ping=False,
     #     audio=True,
+    #     numballs=100,
     # ),
 ]
 
