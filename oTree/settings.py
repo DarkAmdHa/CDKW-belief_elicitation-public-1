@@ -4,7 +4,7 @@ SESSION_CONFIG_DEFAULTS = dict(
 )
 SESSION_CONFIGS = [
     dict(
-        name='Urn_Task',
+        name='Urn_Task_100',
         app_sequence=[
             'belief_task',
         ],
@@ -21,6 +21,25 @@ SESSION_CONFIGS = [
         live_ping=False,
         audio=True,
         numballs=100,
+    ),
+    dict(
+        name='Urn_Task_10',
+        app_sequence=[
+            'belief_task',
+        ],
+        num_demo_participants=2,
+        showupfee=4,
+        bsr=1,
+        qsr=0,
+        flat=0,
+        stakeshigh=1,
+        stakeshighval=15,
+        stakeslowval=1.5,
+        stakesflatval=15,
+        full_screen=True,
+        live_ping=False,
+        audio=True,
+        numballs=10,
     ),
     # dict(
     #     name='Choice_List',
