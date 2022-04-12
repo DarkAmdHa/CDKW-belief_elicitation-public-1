@@ -21,24 +21,24 @@ SESSION_CONFIGS = [
         live_ping=False,
         audio=True,
     ),
-    dict(
-        name='Choice_List',
-        app_sequence=[
-            'risk_elicitation',
-        ],
-        num_demo_participants=2,
-        showupfee=4,
-        bsr=0,
-        qsr=1,
-        flat=0,
-        stakeshigh=1,
-        stakeshighval=15,
-        stakeslowval=1.5,
-        stakesflatval=15,
-        full_screen=True,
-        live_ping=False,
-        audio=True,
-    ),
+    # dict(
+    #     name='Choice_List',
+    #     app_sequence=[
+    #         'risk_elicitation',
+    #     ],
+    #     num_demo_participants=2,
+    #     showupfee=4,
+    #     bsr=0,
+    #     qsr=1,
+    #     flat=0,
+    #     stakeshigh=1,
+    #     stakeshighval=15,
+    #     stakeslowval=1.5,
+    #     stakesflatval=15,
+    #     full_screen=True,
+    #     live_ping=False,
+    #     audio=True,
+    # ),
 ]
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs

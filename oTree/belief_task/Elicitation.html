@@ -475,7 +475,7 @@ a:active {
 
 <p>
     {% if treatambiguity %}
-    In this round, the urn consists of <b>100 balls of up to {% if prior == 50 %}2{% else %}5{% endif %} different colors</b>.
+    In this round, the urn consists of <b>{{ session.config.numballs }} balls of up to {% if prior == 50 %}2{% else %}5{% endif %} different colors</b>.
     <br>
     Specifically, there may be some balls that are {% if prior == 50 %}{{ slicecolor1 }}, and some that are {{ slicecolor2 }}{% else %}{{ slicecolor1 }}, {{ slicecolor2 }}, {{ slicecolor3 }}, {{ slicecolor4 }}, and {{ slicecolor5 }}{% endif %} in color.
     <br>
@@ -483,7 +483,7 @@ a:active {
     <br>
     You do <b>not</b> know the exact composition of the urn.
     {% elif treatrisk %}
-    In this round, the urn consists of <b>100 balls</b>, with composition as shown in the figure below.
+    In this round, the urn consists of <b>{{ session.config.numballs }} balls</b>, with composition as shown in the figure below.
 <!--    <br>-->
 <!--    Specifically, there are {% if prior == 50 %}<b>{{ numcolor1 }}</b> {{ slicecolor1 }} and <b>{{ numcolor2 }}</b> {{ slicecolor2 }} balls{% else %}<b>{{ numcolor1 }}</b> {{ slicecolor1 }} balls, <b>{{ numcolor2 }}</b> {{ slicecolor2 }} balls, <b>{{ numcolor3 }}</b> {{ slicecolor3 }} balls, <b>{{ numcolor4 }}</b> {{ slicecolor4 }} balls, and <b>{{ numcolor5 }}</b> {{ slicecolor5 }} balls{% endif %}.-->
     {% endif %}
