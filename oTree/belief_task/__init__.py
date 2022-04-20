@@ -2,7 +2,6 @@ from otree.api import *
 import random
 import itertools
 
-
 doc = """
 BSR Ambiguity: Belief Elicitation Task Instructions
 """
@@ -28,43 +27,22 @@ class Constants(BaseConstants):
         [3, 1, 2],
         [3, 2, 1],
     ]
-    # print(urn_order_fixed)
     # define set of possible colors
     color_fixed = {
         1: 'Black',
-        2: 'Blue',
-        3: 'Green',
-        4: 'Cyan',
+        2: 'Cyan',
+        3: 'Orange',
+        4: 'Yellow',
         5: 'Maroon',
-        6: 'Purple',
+        6: 'Magenta',
         7: 'Olive',
         8: 'Gray',
-        9: 'Brown',
+        9: 'Pink',
         10: 'Red',
-        11: 'Orange',
-        12: 'Pink',
-        13: 'Yellow',
-        14: 'White',
-    }
-    # define fixed list to draw colors from
-    color_fixed_code = list(range(1, 15))
-
-    # define list of text colors (that would correspond to the list of colors above)
-    text_color_fixed = {
-        1: 'White',
-        2: 'White',
-        3: 'White',
-        4: 'Black',
-        5: 'White',
-        6: 'White',
-        7: 'White',
-        8: 'Black',
-        9: 'White',
-        10: 'White',
-        11: 'Black',
-        12: 'Black',
-        13: 'Black',
-        14: 'Black',
+        11: 'Purple',
+        12: 'Green',
+        13: 'White',
+        14: 'Blue',
     }
 
 
@@ -87,7 +65,7 @@ class Player(BasePlayer):
     treatrisk = models.BooleanField()
     treatambiguity = models.BooleanField()
     prior = models.IntegerField()
-    
+
     # urn color composition in round (index)
     color1 = models.IntegerField()
     color2 = models.IntegerField()
@@ -104,11 +82,11 @@ class Player(BasePlayer):
 
     # color index of predicted event
     color_event = models.IntegerField()
-    
+
     # whether predicting event is true or false
     predict_true = models.BooleanField()
     predict_false = models.BooleanField()
-    
+
     # store decision variable
     belief = models.IntegerField(min=0, max=100, initial=-1)
     cognitive_certainty = models.IntegerField(initial=30)
@@ -137,29 +115,39 @@ def creating_session(subsession: Subsession):
         player.ambiguityfirst = player.participant.vars['ambiguityfirst']
 
         # extract risk/ambiguity treatment and parameters for each round
-        orderlist1 = Constants.prior_order_fixed[player.order1-1]
-        orderlist2 = Constants.prior_order_fixed[player.order2-1]
+        orderlist1 = Constants.prior_order_fixed[player.order1 - 1]
+        orderlist2 = Constants.prior_order_fixed[player.order2 - 1]
 
         if subsession.round_number <= 3:
-            player.prior = Constants.prior_param[orderlist1[subsession.round_number-1]]
+            player.prior = Constants.prior_param[orderlist1[subsession.round_number - 1]]
             player.treatrisk = player.riskfirst
             player.treatambiguity = player.ambiguityfirst
 
         elif subsession.round_number > 3:
-            player.prior = Constants.prior_param[orderlist2[subsession.round_number-4]]
+            player.prior = Constants.prior_param[orderlist2[subsession.round_number - 4]]
             player.treatrisk = 1 - player.riskfirst
             player.treatambiguity = 1 - player.ambiguityfirst
 
-        # randomize list of urn colors
+        # randomize list of urn colors (either draw from 1st 7 or last 7 colors)
         if subsession.round_number == 1:
-            color_fixed_code_copy = Constants.color_fixed_code.copy()
-            urn5_color_code1 = random.sample(color_fixed_code_copy, 5)
-            color_fixed_code_copy = [x for x in color_fixed_code_copy if x not in urn5_color_code1]
-            urn5_color_code2 = random.sample(color_fixed_code_copy, 5)
-            color_fixed_code_copy = [x for x in color_fixed_code_copy if x not in urn5_color_code2]
-            urn2_color_code1 = random.sample(color_fixed_code_copy, 2)
-            color_fixed_code_copy = [x for x in color_fixed_code_copy if x not in urn2_color_code1]
-            urn2_color_code2 = color_fixed_code_copy
+            # divide set of 14 colors into 2 sets of 7 colors
+            color_fixed_code_roll = random.randint(1, 2)
+            color_fixed_code1 = []
+            color_fixed_code2 = []
+            if color_fixed_code_roll == 1:
+                color_fixed_code1 = list(range(1, 8))
+                color_fixed_code2 = list(range(8, 15))
+            elif color_fixed_code_roll == 2:
+                color_fixed_code1 = list(range(8, 15))
+                color_fixed_code2 = list(range(1, 8))
+            # print(color_fixed_code1)
+            # print(color_fixed_code2)
+            urn5_color_code1 = random.sample(color_fixed_code1, 5)
+            color_fixed_code1 = [x for x in color_fixed_code1 if x not in urn5_color_code1]
+            urn5_color_code2 = random.sample(color_fixed_code2, 5)
+            color_fixed_code2 = [x for x in color_fixed_code2 if x not in urn5_color_code2]
+            urn2_color_code1 = color_fixed_code1
+            urn2_color_code2 = color_fixed_code2
             player.participant.vars['urn5_color_code1'] = urn5_color_code1
             player.participant.vars['urn5_color_code2'] = urn5_color_code2
             player.participant.vars['urn2_color_code1'] = urn2_color_code1
@@ -189,17 +177,17 @@ def creating_session(subsession: Subsession):
         # determine exact urn composition for each round
         if player.treatrisk:
             if player.prior == 50:
-                player.num_color1 = 50
-                player.num_color2 = 50
+                player.num_color1 = int(player.session.config['numballs'] / 2)
+                player.num_color2 = int(player.session.config['numballs'] / 2)
             elif player.prior != 50:
-                player.num_color1 = 20
-                player.num_color2 = 20
-                player.num_color3 = 20
-                player.num_color4 = 20
-                player.num_color5 = 20
+                player.num_color1 = int(player.session.config['numballs'] / 5)
+                player.num_color2 = int(player.session.config['numballs'] / 5)
+                player.num_color3 = int(player.session.config['numballs'] / 5)
+                player.num_color4 = int(player.session.config['numballs'] / 5)
+                player.num_color5 = int(player.session.config['numballs'] / 5)
         if player.treatambiguity:
             if player.prior == 50:
-                for x in range(100):
+                for x in range(player.session.config['numballs']):
                     # print(x)
                     rollindividualball = random.randint(1, 2)
                     # print(rollindividualball)
@@ -208,7 +196,7 @@ def creating_session(subsession: Subsession):
                     elif rollindividualball == 2:
                         player.num_color2 += 1
             elif player.prior != 50:
-                for x in range(100):
+                for x in range(player.session.config['numballs']):
                     # print(x)
                     rollindividualball = random.randint(1, 5)
                     # print(rollindividualball)
@@ -236,7 +224,7 @@ def creating_session(subsession: Subsession):
             player.color_event = player.participant.vars['urn5_color_code1'][random.randint(4, 5) - 1]
         elif (subsession.round_number > 3) & (player.prior == 80):
             player.color_event = player.participant.vars['urn5_color_code2'][random.randint(3, 5) - 1]
-        
+
         # determine whether predicting Event or Not Event
         if player.prior == 20:
             player.predict_true = 1
@@ -278,26 +266,11 @@ class Elicitation(Page):
         slicecolor3 = 'none'
         slicecolor4 = 'none'
         slicecolor5 = 'none'
-        textcolor1 = Constants.text_color_fixed[player.color1]
-        textcolor2 = Constants.text_color_fixed[player.color2]
-        textcolor3 = 'none'
-        textcolor4 = 'none'
-        textcolor5 = 'none'
 
         if player.prior != 50:
             slicecolor3 = Constants.color_fixed[player.color3]
             slicecolor4 = Constants.color_fixed[player.color4]
             slicecolor5 = Constants.color_fixed[player.color5]
-            textcolor3 = Constants.text_color_fixed[player.color3]
-            textcolor4 = Constants.text_color_fixed[player.color4]
-            textcolor5 = Constants.text_color_fixed[player.color5]
-
-        if player.treatambiguity:
-            textcolor1 = 'black'
-            textcolor2 = 'black'
-            textcolor3 = 'black'
-            textcolor4 = 'black'
-            textcolor5 = 'black'
 
         return dict(
             par_vars=parvars,
@@ -311,11 +284,6 @@ class Elicitation(Page):
             slicecolor3=slicecolor3,
             slicecolor4=slicecolor4,
             slicecolor5=slicecolor5,
-            textcolor1=textcolor1,
-            textcolor2=textcolor2,
-            textcolor3=textcolor3,
-            textcolor4=textcolor4,
-            textcolor5=textcolor5,
             numcolor1=player.num_color1,
             numcolor2=player.num_color2,
             numcolor3=player.num_color3,
@@ -331,13 +299,15 @@ class Elicitation(Page):
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        player.participant.vars['urn_num_color' + str(player.round_number)] = [player.num_color1, player.num_color2, player.num_color3, player.num_color4, player.num_color5]
+        player.participant.vars['urn_num_color' + str(player.round_number)] = [player.num_color1, player.num_color2,
+                                                                               player.num_color3, player.num_color4,
+                                                                               player.num_color5]
         player.participant.vars['treatambiguity' + str(player.round_number)] = player.treatambiguity
         player.participant.vars['treatrisk' + str(player.round_number)] = player.treatrisk
-        player.participant.vars['colorevent'+str(player.round_number)] = player.color_event
-        player.participant.vars['belief'+str(player.round_number)] = player.belief
-        player.participant.vars['predicttrue'+str(player.round_number)] = player.predict_true
-        player.participant.vars['predictfalse'+str(player.round_number)] = player.predict_false
+        player.participant.vars['colorevent' + str(player.round_number)] = player.color_event
+        player.participant.vars['belief' + str(player.round_number)] = player.belief
+        player.participant.vars['predicttrue' + str(player.round_number)] = player.predict_true
+        player.participant.vars['predictfalse' + str(player.round_number)] = player.predict_false
 
         participant = player.participant
         if timeout_happened:
@@ -366,26 +336,11 @@ class CognitiveUncertainty(Page):
         slicecolor3 = 'none'
         slicecolor4 = 'none'
         slicecolor5 = 'none'
-        textcolor1 = Constants.text_color_fixed[player.color1]
-        textcolor2 = Constants.text_color_fixed[player.color2]
-        textcolor3 = 'none'
-        textcolor4 = 'none'
-        textcolor5 = 'none'
 
         if player.prior != 50:
             slicecolor3 = Constants.color_fixed[player.color3]
             slicecolor4 = Constants.color_fixed[player.color4]
             slicecolor5 = Constants.color_fixed[player.color5]
-            textcolor3 = Constants.text_color_fixed[player.color3]
-            textcolor4 = Constants.text_color_fixed[player.color4]
-            textcolor5 = Constants.text_color_fixed[player.color5]
-
-        if player.treatambiguity:
-            textcolor1 = 'black'
-            textcolor2 = 'black'
-            textcolor3 = 'black'
-            textcolor4 = 'black'
-            textcolor5 = 'black'
 
         return dict(
             par_vars=parvars,
@@ -399,11 +354,6 @@ class CognitiveUncertainty(Page):
             slicecolor3=slicecolor3,
             slicecolor4=slicecolor4,
             slicecolor5=slicecolor5,
-            textcolor1=textcolor1,
-            textcolor2=textcolor2,
-            textcolor3=textcolor3,
-            textcolor4=textcolor4,
-            textcolor5=textcolor5,
             numcolor1=player.num_color1,
             numcolor2=player.num_color2,
             numcolor3=player.num_color3,

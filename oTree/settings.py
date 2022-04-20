@@ -4,7 +4,7 @@ SESSION_CONFIG_DEFAULTS = dict(
 )
 SESSION_CONFIGS = [
     dict(
-        name='Urn_Task',
+        name='Urn_Task_100',
         app_sequence=[
             'belief_task',
         ],
@@ -20,16 +20,17 @@ SESSION_CONFIGS = [
         full_screen=True,
         live_ping=False,
         audio=True,
+        numballs=100,
     ),
     dict(
-        name='Choice_List',
+        name='Urn_Task_10',
         app_sequence=[
-            'risk_elicitation',
+            'belief_task',
         ],
         num_demo_participants=2,
         showupfee=4,
-        bsr=0,
-        qsr=1,
+        bsr=1,
+        qsr=0,
         flat=0,
         stakeshigh=1,
         stakeshighval=15,
@@ -38,7 +39,27 @@ SESSION_CONFIGS = [
         full_screen=True,
         live_ping=False,
         audio=True,
+        numballs=10,
     ),
+    # dict(
+    #     name='Choice_List',
+    #     app_sequence=[
+    #         'risk_elicitation',
+    #     ],
+    #     num_demo_participants=2,
+    #     showupfee=4,
+    #     bsr=0,
+    #     qsr=1,
+    #     flat=0,
+    #     stakeshigh=1,
+    #     stakeshighval=15,
+    #     stakeslowval=1.5,
+    #     stakesflatval=15,
+    #     full_screen=True,
+    #     live_ping=False,
+    #     audio=True,
+    #     numballs=100,
+    # ),
 ]
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
