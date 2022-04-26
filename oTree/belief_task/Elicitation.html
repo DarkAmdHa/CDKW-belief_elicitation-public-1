@@ -63,11 +63,10 @@ slider.oninput = function() {
     {% else %}
         allColors =  [];
     {% endif %}
-    console.log(allColors);
 </script>
 <script>
     const urnContainer = document.querySelector('.urn');
-
+    const totalNumOfBalls = {{ session.config.numballs }}
     //Ball Object
       class Ball {
 
@@ -165,14 +164,14 @@ slider.oninput = function() {
      //Balls array, used to later draw each ball object within
     balls = [];
 
-    let size = 20,
-        yPos = 0,
-        i=0,
-        x=17,
-        y=278,
-        increment = 5;
-
-    while(balls.length<100){
+    if(totalNumOfBalls == 100){
+        let size = 20,
+            yPos = 0,
+            i=0,
+            x=17,
+            y=278,
+            increment = 5;
+            while(balls.length<totalNumOfBalls){
         //First row of balls is unique, in order to account for the curved section of the jar
         if(yPos === 0){
             ball = new Ball(
@@ -210,6 +209,58 @@ slider.oninput = function() {
         }
 
     }
+    }else{
+        document.querySelector('.urn').classList.add('urn-10')
+        let size = 45,
+            yPos = 0,
+            i=0,
+            x=10,
+            y=210,
+            increment = 5;
+
+
+        while(balls.length<totalNumOfBalls){
+        //First row of balls is unique, in order to account for the curved section of the jar
+        if(yPos === 0){
+            ball = new Ball(
+            x,
+            y,
+            '#333',
+            'red',
+            true
+        );
+        x+=size+2;
+        //If reached the end of the first row(right side of the jar), go to the next row
+        if(x>80){
+            yPos += 1;
+        }
+        balls.push(ball);
+    }
+    //All other rows
+    else if(yPos >= 1){
+        if(x>=50){
+            yPos +=1;
+            y-=size+2;
+            x=10;
+        }else{
+            x+=size+increment;
+        }
+        ball = new Ball(
+            x,
+            y,
+            '#333',
+            'red',
+            true
+        );
+        balls.push(ball);
+
+        }
+
+    }
+    }
+
+
+    
 
     //Loop through each ball object in the 'balls' array, in order to "draw" each of them
     function loop() {
@@ -256,10 +307,10 @@ slider.oninput = function() {
     let colorIndex = 0,
         colorToAdd = allColors[colorIndex];
     const getConsecutiveColors = function(){
-        if(colorToAdd.number>=100/numberOfColors){
+        if(colorToAdd.number>=totalNumOfBalls/numberOfColors){
             colorIndex++;
             colorToAdd = allColors[colorIndex];
-            while(colorToAdd.number>=(100/numberOfColors)){
+            while(colorToAdd.number>=(totalNumOfBalls/numberOfColors)){
                 colorIndex = Math.floor(Math.random() * numberOfColors)
                 colorToAdd = allColors[colorIndex];
             }
@@ -282,13 +333,26 @@ slider.oninput = function() {
         })
         //Set left column rows positions
         let leftColumnRows = document.querySelectorAll('.color-row'),
-        colorBefore ='blank';
-        for(let i = leftColumnRows.length-1;i>=0;i--){
-            leftColumnRows[i].style.top = `${allBalls[i*10].offsetTop - 3}px`;
-            if(allBalls[i*10].style.background != '' && colorBefore != allBalls[i*10].style.background){
-                leftColumnRows[i].innerText = `${document.querySelectorAll('.' + allBalls[i*10].style.background).length} ${allBalls[i*10].style.background} balls`;
-                leftColumnRows[i].classList.add(`${allBalls[i*10].style.background}`)
-                colorBefore = allBalls[i*10].style.background;
+            colorBefore ='blank',
+            totalRows,
+            indexToShowText;
+        if(totalNumOfBalls === 100){
+            totalRows = 10;
+            indexToShowText = 10;
+        }
+        else if(totalNumOfBalls === 10){
+            totalRows = 5;
+            indexToShowText = 2;
+        }
+            
+
+        for(let i = totalRows - 1;i>=0;i--){
+            console.log(i * indexToShowText);
+            leftColumnRows[i].style.top = `${allBalls[i*indexToShowText].offsetTop - 3}px`;
+            if(allBalls[i*indexToShowText].style.background != '' && colorBefore != allBalls[i*indexToShowText].style.background){
+                leftColumnRows[i].innerText = `${document.querySelectorAll('.' + allBalls[i*indexToShowText].style.background).length} ${allBalls[i*indexToShowText].style.background} balls`;
+                leftColumnRows[i].classList.add(`${allBalls[i*indexToShowText].style.background}`)
+                colorBefore = allBalls[i*indexToShowText].style.background;
             }
         }
     }
@@ -374,7 +438,10 @@ slider.oninput = function() {
     position: relative;
     box-shadow: 11px 11px 12px 2px rgb(0 0 0 / 5%);
     }
-
+    .urn-10{
+        width:130px;
+        height:260px;
+    }
     .ball{
     position: absolute;
     width: 20px;
@@ -383,6 +450,11 @@ slider.oninput = function() {
     border: 1px solid #7e7e7e;
     box-shadow:inset 3px -4px 8px rgba(255, 255, 255, 0.384), inset -3px 1px 4px rgba(0, 0, 0, 0.404), 0 0 1px #0000003b ;
     transition: border 0.5s ease;
+    }
+
+    .urn-10 .ball{
+        width: 45px;
+        height: 45px;
     }
 
     .ball:nth-child(4n){
@@ -423,6 +495,10 @@ slider.oninput = function() {
     height: 100%;
     bottom: 0;
     text-align: right;
+    }
+
+    .urn-10 .left-column{
+        left:-140px;
     }
 
     .color-row{
