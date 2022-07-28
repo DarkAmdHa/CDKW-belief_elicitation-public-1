@@ -1,0 +1,41 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+{{ block title }}Understanding Check Questions{{ endblock }}
+
+{{ block scripts }}
+{{ endblock }}
+
+{{ block styles }}
+<style>
+    .tab {
+        display: none;
+        text-align: justify;
+    }
+    .otree-title {
+        text-align: center;
+    }
+    .otree-body{
+        font-size: 103%;
+    }
+    .otree-timer {
+        display: none;
+    }
+</style>
+{{ endblock }}
+
+{{ block content }}
+
+<hr>
+
+<p>
+    {{ formfields }}
+</p>
+
+<div class="button" align="right">
+    <br><br>
+    <button class="btn btn-primary mb-3">
+        NEXT
+    </button>
+</div>
+
+{{ endblock }}

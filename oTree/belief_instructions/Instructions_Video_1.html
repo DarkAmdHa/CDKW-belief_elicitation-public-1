@@ -1,0 +1,364 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+{{ block title }}Instructions{% if session.config.prolific == False %} for Part A{% endif %} (Video 1){{ endblock }}
+
+{{ block styles }}
+<style>
+    .otree-form-errors {
+    visibility: hidden;
+    display: none;
+}
+</style>
+<style>
+    .tab {
+        display: none;
+        text-align: justify;
+    }
+    .otree-title {
+        text-align: center;
+    }
+    .otree-body{
+        font-size: 103%;
+    }
+    .otree-timer {
+        display: none;
+    }
+</style>
+<style>
+    #interactiveslider {
+        display: none;
+    }
+    #labelleft {
+        display: none;
+    }
+    #labelleftinitial {
+        display: block;
+    }
+    #labelleftbottom {
+        display: none;
+    }
+    #labelright {
+        display: none;
+    }
+    #labelrightinitial {
+        display: block;
+    }
+    #labelrightbottom {
+        display: none;
+    }
+    #comprehension {
+        display: none;
+    }
+    #compready {
+        display: none;
+    }
+    #compnotready {
+        display: block;
+    }
+</style>
+<link href="{{ static 'belief-slider-3.css' }}" rel="stylesheet">
+<style>
+    .slider::-webkit-slider-thumb{
+        transition: opacity 0.5s ease;
+    }
+    .slider-thumb-hidden::-webkit-slider-thumb{
+        opacity: 0;
+    }
+</style>
+<!-- Hide video controls-->
+<style>
+video {
+  pointer-events: none;
+}
+</style>
+{{ endblock }}
+
+{{ block scripts }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script type='text/javascript'>
+document.getElementById('myVideo').addEventListener('ended',myHandler,false);
+function myHandler(e) {
+    // What you want to do after the event
+    interactiveslider.style.display = "block";
+
+    setTimeout(
+        function() {
+          comprehension.style.display = "block";
+          compready.style.display = "block";
+          compnotready.style.display = "none";
+        }, {{ Constants.comprehension_timeout }});
+}
+</script>
+<script>
+var slider = document.getElementById("myRange");
+var output1 = document.getElementById("demo1");
+var ticket1 = document.getElementById("ticket1");
+var output2 = document.getElementById("demo2");
+var ticket2 = document.getElementById("ticket2");
+
+slider.oninput = function() {
+  output1.innerHTML = 100-this.value;
+  ticket1.innerHTML = Math.round((1-((0-this.value)/100)**2)*100);
+  output2.innerHTML = this.value;
+  ticket2.innerHTML = Math.round((1-((100-this.value)/100)**2)*100);
+  labelleft.style.display = "block";
+  labelleftinitial.style.display = "none";
+  labelleftbottom.style.display = "block";
+  labelright.style.display = "block";
+  labelrightinitial.style.display = "none";
+  labelrightbottom.style.display = "block";
+
+  setTimeout(
+    function() {
+      comprehension.style.display = "block";
+      compready.style.display = "block";
+      compnotready.style.display = "none";
+    }, {{ Constants.comprehension_timeout }});
+}
+</script>
+<!-- Unhide slider button -->
+<script>
+const sliders = document.querySelectorAll('.slider');
+for(let i = 0;i<sliders.length;i++){
+    sliders[i].addEventListener('mousedown', ()=>{
+        sliders[i].classList.remove('slider-thumb-hidden');
+    });
+}
+</script>
+<!-- Load video controls -->
+<script>
+window.onload = function() {
+    // if wrong attempt, do not reload everything
+    if ({{ player.ctrlclicks_video1_heart0 }} != 0 || {{ player.ctrlclicks_video1_heart75 }} != 0 || {{ player.ctrlclicks_video1_heart25 }} != 0 || {{ player.ctrlclicks_video1_heart100 }} != 0) {
+        interactiveslider.style.display = "block";
+        comprehension.style.display = "block";
+        compready.style.display = "block";
+        compnotready.style.display = "none";
+        document.querySelector('#myVideo').autoplay = false;
+    }
+
+    // Video
+    var video = document.getElementById("myVideo");
+
+    // default video time
+    var max_time = -100;
+
+    // Buttons
+    var playButton = document.getElementById("play-pause");
+    var muteButton = document.getElementById("mute");
+
+    // Sliders
+    var seekBar = document.getElementById("seek-bar");
+    var volumeBar = document.getElementById("volume-bar");
+
+    // Event listener for the play/pause button
+    playButton.addEventListener("click", function() {
+        if (video.paused == true) {
+            // Play the video
+            video.play();
+
+            // Update the button text to 'Pause'
+            playButton.innerHTML = "Pause";
+        } else {
+            // Pause the video
+            video.pause();
+
+            // Update the button text to 'Play'
+            playButton.innerHTML = "Play";
+        }
+    });
+
+    // Event listener for the mute button
+    muteButton.addEventListener("click", function() {
+        if (video.muted == false) {
+            // Mute the video
+            video.muted = true;
+
+            // Update the button text
+            muteButton.innerHTML = "Unmute";
+        } else {
+            // Unmute the video
+            video.muted = false;
+
+            // Update the button text
+            muteButton.innerHTML = "Mute";
+        }
+    });
+
+    // Event listener for the seek bar
+    seekBar.addEventListener("change", function() {
+        // Capture current time
+        var previous_time = video.currentTime;
+        if ( max_time <= previous_time ) {
+            max_time = previous_time;
+        }
+
+        // Calculate the new time
+        var time = video.duration * (seekBar.value / 100);
+
+        // Update the video time
+        if ({{ player.ctrlclicks_video1_heart0 }} != 0 || {{ player.ctrlclicks_video1_heart75 }} != 0 || {{ player.ctrlclicks_video1_heart25 }} != 0 || {{ player.ctrlclicks_video1_heart100 }} != 0) {
+            video.currentTime = time;
+        } else {
+            if ( {{ session.config.testing }} == 1 ) {
+                video.currentTime = time;
+            } else if ( {{ session.config.testing }} == 0 && time <= max_time ) {
+                video.currentTime = time;
+            } else if ( {{ session.config.testing }} == 0 && time > max_time ) {
+                video.currentTime = max_time;
+            }
+        }
+    });
+
+    // Update the seek bar as the video plays
+    video.addEventListener("timeupdate", function() {
+        // Calculate the slider value
+        var value = (100 / video.duration) * video.currentTime;
+
+        // Update the slider value
+        seekBar.value = value;
+    });
+
+    // Pause the video when the slider handle is being dragged
+    seekBar.addEventListener("mousedown", function() {
+        video.pause();
+        playButton.innerHTML = "Play";
+    });
+
+    // Play the video when the slider handle is dropped
+    seekBar.addEventListener("mouseup", function() {
+        video.play();
+        playButton.innerHTML = "Pause";
+    });
+
+    // Event listener for the volume bar
+    volumeBar.addEventListener("change", function() {
+        // Update the video volume
+        video.volume = volumeBar.value;
+    });
+}
+</script>
+{{ endblock }}
+
+{{ block content }}
+
+<hr>
+
+<center>
+    {% if player.ctrlclicks_video1_heart0 == 0 and player.ctrlclicks_video1_heart25 == 0 and player.ctrlclicks_video1_heart75 == 0 and player.ctrlclicks_video1_heart100 == 0%}
+    <b>
+        Please watch the videos over the next few pages carefully.
+        <br>
+        You will be asked to answer a set of comprehension questions after watching each video to make sure you have understood the instructions.
+    </b>
+    <br><br>
+    Please watch Part 1 of the video below.
+    {% else %}
+    <b><font color="red" size="+2">One or more of your answers is incorrect. Please try again.</font></b>
+    {% endif %}
+    <br>
+    {{ if session.config.testing == 1 }}
+    <font color="blue"><b>Note: Testing mode is on.</b></font><br>
+    {{ endif }}
+    <video width="800" height="500" autoplay="autoplay" id="myVideo">
+        <source src="{{ static video1path }}" type="video/mp4">
+        Video not supported. Please use a supported browser, or send a message to the Experimenter.
+    </video>
+    <!-- Video Controls -->
+    <div id="video-controls">
+    <button type="button" id="play-pause">Play/Pause</button>
+    <input type="range" id="seek-bar" value="0">
+    <button type="button" id="mute">Mute</button>
+    <input type="range" id="volume-bar" min="0" max="1" step="0.1" value="1">
+    </div>
+</center>
+
+<br><br>
+
+<div id="interactiveslider" align="center">
+    <b>By adjusting your prediction on the slider below, you will see how many {{ if bsr }}lottery {{ endif }} tickets you would receive.</b>
+    <br>
+    <br>
+    <b>When answer the questions below, imagine that a <font color="blue">heart is drawn</font></b>
+    <div id="compready"></div>
+    <div id="compnotready"><br></div>
+    <br>
+    <br>
+
+    <label for="demo1" class="float-left" style="width:300px" align="left" id="labelleft">
+        <img src="{% static 'global/cardimages/ace-spade.png' %}" width="75px">
+        <img src="{% static 'global/cardimages/ace-club.png' %}" width="75px">
+        <img src="{% static 'global/cardimages/ace-diamond.png' %}" width="75px">
+        <br>
+        <b>
+            You predict a <u><span id="demo1"></span>%</u> chance that a<br>spade, club, or diamond will be drawn.
+        </b>
+    </label>
+    <label class="float-left" style="width:300px" align="left" id="labelleftinitial">
+        <img src="{% static 'global/cardimages/ace-spade.png' %}" width="75px">
+        <img src="{% static 'global/cardimages/ace-club.png' %}" width="75px">
+        <img src="{% static 'global/cardimages/ace-diamond.png' %}" width="75px">
+        <br>
+        <b>
+            Please adjust<br>the slider.
+        </b>
+    </label>
+
+    <label for="demo2" class="float-right" style="width:300px" align="right" id="labelright">
+        <img src="{% static 'global/cardimages/ace-heart.png' %}" width="75px" style="border:5px solid blue">
+        <br>
+        <b>
+            You predict a <u><span id="demo2"></span>%</u> chance that a<br>heart will be drawn.
+        </b>
+    </label>
+    <label class="float-right" style="width:300px" align="right" id="labelrightinitial">
+        <img src="{% static 'global/cardimages/ace-heart.png' %}" width="75px" style="border:5px solid blue">
+        <br>
+        <b>
+            Please adjust<br>the slider.
+        </b>
+    </label>
+
+    <div class="slidecontainer">
+        <input type="range" min="0" max="100" step="1" value="-1" class="slider slider-thumb-hidden" id="myRange">
+    </div>
+
+    <label for="ticket1" class="float-left" style="width:300px" align="left" id="labelleftbottom">
+        <b>{{ if bsr }}Lottery tickets{{ elif qsr }}Tickets{{ endif }} if a<br>spade, club, or diamond is drawn: <span id="ticket1"></span></b>
+    </label>
+
+    <label for="ticket2" class="float-right" style="width:300px" align="right" id="labelrightbottom">
+        <b><font color="blue">{{ if bsr }}Lottery tickets{{ elif qsr }}Tickets{{ endif }} if a<br>heart is drawn: <span id="ticket2"></span></font></b>
+    </label>
+    <br>
+</div>
+
+<div id="comprehension" align="center">
+    <br><br>
+    <b>Comprehension Questions</b>
+    <br><br>
+    <p>
+        Please answer the following questions.
+        <br><br>
+        (1) How many {{ if bsr }}lottery {{ endif }}tickets do you receive if you predict that a heart would be drawn with a <b>0%</b> chance,<br>and <b>a heart turned out to be drawn</b>?
+        {{ formfield 'ctrlqns_video1_heart0' label="" }}
+        <br><br>
+        (2) How many {{ if bsr }}lottery {{ endif }}tickets do you receive if you predict that a heart would be drawn with a <b>25%</b> chance,<br>and <b>a heart turned out to be drawn</b>?
+        {{ formfield 'ctrlqns_video1_heart25' label="" }}
+        <br><br>
+        (3) How many {{ if bsr }}lottery {{ endif }}tickets do you receive if you predict that a heart would be drawn with a <b>75%</b> chance,<br>and <b>a heart turned out to be drawn</b>?
+        {{ formfield 'ctrlqns_video1_heart75' label="" }}
+        <br><br>
+        (4) How many {{ if bsr }}lottery {{ endif }}tickets do you receive if you predict that a heart would be drawn with a <b>100%</b> chance,<br>and <b>a heart turned out to be drawn</b>?
+        {{ formfield 'ctrlqns_video1_heart100' label="" }}
+    </p>
+    <div style = "text-align: center">
+        <br><br>
+        <button class="btn-primary btn">CHECK ANSWERS</button>
+    </div>
+</div>
+
+{{ endblock }}

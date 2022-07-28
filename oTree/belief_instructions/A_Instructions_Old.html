@@ -1,0 +1,252 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+{{ block title }}{{ endblock }}
+
+{{ block styles }}
+<style>
+    .tab {
+        display: none;
+        text-align: justify;
+    }
+    .otree-title {
+        text-align: center;
+    }
+    .otree-body{
+        font-size: 103%;
+    }
+    .otree-timer {
+        display: none;
+    }
+</style>
+{{ endblock }}
+
+{{ block scripts }}
+<!-- Code for PREV-NEXT buttons -->
+<script>
+    let activeTab = 0;
+
+    function showCurrentTabOnly() {
+        let tabIndex = 0;
+        for (let tab of document.getElementsByClassName('tab')) {
+            tab.style.display = tabIndex === activeTab ? 'block' : 'none';
+            tabIndex++;
+        }
+    }
+
+    showCurrentTabOnly();
+    for (let btn of document.getElementsByClassName('btn-tab')) {
+        btn.onclick = function () {
+            activeTab += parseInt(btn.dataset.offset);
+            showCurrentTabOnly();
+        }
+    }
+</script>
+<!-- Codes for math typesetting -->
+<script>
+MathJax = {
+    tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]},
+    startup: {
+        ready: function () {
+            MathJax.startup.defaultReady();
+            document.getElementById('render').disabled = false;
+        }
+    }
+}
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>
+function convert() {
+    var input = document.getElementById("input").value.trim();
+    var button = document.getElementById("render");
+    button.disabled = true;
+    output = document.getElementById('output');
+    output.innerHTML = input;
+    MathJax.texReset();
+    MathJax.typesetClear();
+    MathJax.typesetPromise()
+    .catch(function (err) {
+        output.innerHTML = '';
+        output.appendChild(document.createElement('pre')).appendChild(document.createTextNode(err.message));
+    })
+    .then(function() {
+        button.disabled = false;
+    });
+}
+</script>
+{{ endblock }}
+
+{{ block content }}
+<!-- Page 1 -->
+<div class="tab">
+    <div class="card-header bg-transparent mainheader" >
+        <h4>
+            <center>
+                Instructions for Part A (Page 1)
+            </center>
+        </h4>
+    </div>
+
+    <br>
+
+    <p>
+        We will now begin Part A. Please proceed to read the instructions over the next few pages.
+        <br><br>
+        At the end of the instructions, you will be asked to answer a set of comprehension questions. You will be able to attempt each question multiple times until you get the correct answer.
+        <br><br>However, if you make too many failed attempts on too many questions, then we may remove you from the experiment, and you will forgo the payments from the rest of the experiment.
+        <br><br>
+        <b>Hence, we recommend you review the instructions carefully before proceeding.</b>
+    </p>
+    <p>
+        <button type="button" class="btn btn-primary btn-tab" data-offset="1" style="float: right">Next</button>
+    </p>
+</div>
+
+<!-- Page 2 -->
+<!-- Duplicate this div if you have more than 3 pages of instructions -->
+<div class="tab">
+    <div class="card-header bg-transparent mainheader" >
+        <h4>
+            <center>
+                Instructions for Part A (Page 2)
+            </center>
+        </h4>
+    </div>
+
+    <br>
+
+    <p>
+        Part A consists of six rounds of an individual decision-making task.
+        <br><br>
+        In each round, the computer will present you with an urn containing 100 balls. Note that you will be presented with a new urn at the beginning of each round. <b>Hence, the composition of the urn will be different in each round.</b>
+        <br><br>
+        At the beginning of each round, the computer will reveal to you some information about the composition of the urn. The computer will then randomly draw a ball from the urn.
+        <br><br>
+        <b>Your task is to make a prediction pertaining to the ball randomly drawn by the computer.</b> We will call this an <i>Event</i>. Hence, you are asked to predict how likely an <i>Event</i> will occur.
+        <br><br>
+        To make your guess, you will need to choose a number between 0 and 100. <b>A higher number means that you think the <i>Event</i> is more likely to occur.</b>
+        <br><br>
+    </p>
+
+    <p>
+        <button type="button" class="btn btn-primary btn-tab" data-offset="-1" style="background-color: gray;
+        border-color: gray;">Previous</button>
+        <button type="button" class="btn btn-primary btn-tab" data-offset="1" style="float: right;">Next</button>
+    </p>
+</div>
+
+
+<!-- Page 3 -->
+<!-- Duplicate this div if you have more than 3 pages of instructions -->
+<div class="tab">
+    <div class="card-header bg-transparent mainheader" >
+        <h4>
+            <center>
+                Instructions for Part A (Page 3)
+            </center>
+        </h4>
+    </div>
+
+    <br>
+
+    <p>
+        At the end of the experiment, if you are paid for Part A, then the computer will randomly pick <b>one of the six rounds</b> for payment.
+        <br><br>
+
+        <!-- BSR -->
+        {{ if bsr }}
+        For the randomly chosen round, your payment based on your prediction is determined as follows. You will receive either &euro;0 or &euro;{{ stakes }}. Your chance of receiving &euro;{{ stakes }} depends on how accurate your guess is.
+        <br><br>
+        Specifically, your chance of receiving &euro;{{ stakes }} is determined by the following formulas:
+        <br><br>
+        &emsp;&emsp; Chance of receiving &euro;{{ stakes }} if <i>Event</i> <b>occurs</b> = \(\left[1-\left(\frac{100-\text{your guess}}{100}\right)^2\right]\times 100\)
+        <br>
+        &emsp;&emsp; Chance of receiving &euro;{{ stakes }} if <i>Event</i> <b>does not occur</b> = \(\left[1-\left(\frac{\text{your guess}}{100}\right)^2\right]\times 100\)
+        <br><br>
+        <b><u>Example</u></b>
+        <br>
+        Suppose you are asked to predict how likely that the ball is red. In this case, the <i>Event</i> you are predicting is that the ball randomly drawn by the computer is red.
+        <br><br>
+        Now, suppose you state a high number as your guess that the ball is red. The formulas above imply that your chance of receiving &euro;{{ stakes }} is high if the computer draws a red ball, and your chance of receiving &euro;{{ stakes }} is low if the computer draws any other colored ball.
+        <br><br>
+        To further illustrate, here are some numerical examples pertaining to the same <i>Event</i>:
+        <ol>
+            <li>Suppose your guess is 100. If the computer draws a red ball, then your chance of receiving &euro;{{ stakes }} will be<br>$\left[1-\left(\frac{100-100}{100}\right)^2\right]\times100=100$.</li>
+            <li>Suppose your guess is 100. If the computer draws a ball of another color, then your chance of receiving &euro;{{ stakes }} will be<br>$\left[1-\left(\frac{100}{100}\right)^2\right]\times100=0$.</li>
+            <li>Suppose your guess is 70. If the computer draws a red ball, then your chance of receiving &euro;{{ stakes }} will be<br>$\left[1-\left(\frac{100-70}{100}\right)^2\right]\times100=91$.</li>
+            <li>Suppose your guess is 70. If the computer draws a ball of another color, then your chance of receiving &euro;{{ stakes }} will be<br>$\left[1-\left(\frac{70}{100}\right)^2\right]\times100=51$.</li>
+        </ol>
+
+        To determine whether you receive &euro;{{ stakes }}, the computer will randomly draw a number between 0 and 100. Each number between 0 and 100 is equally likely to be picked. If the number drawn by the computer is less than or equal to your chance of receiving &euro;{{ stakes }} as determined by the formulas above, then you will receive &euro;{{ stakes }}. Otherwise, you will receive &euro;0. Hence, in the third numerical above, if the number randomly drawn by the computer is less than or equal to 91, then you will receive &euro;{{ stakes }}. Otherwise, you will receive &euro;0.
+        <br><br>
+        <b>In summary, your chance of receiving &euro;{{ stakes }} is higher the more accurate is your prediction of the <i>Event</i>.</b>
+
+        <!-- QSR -->
+        {{ elif qsr }}
+        For the randomly chosen round, your payment based on your prediction is determined as follows. You will receive an amount between &euro;0 and &euro;{{ stakes }}. The exact amount you will receive depends on how accurate your guess is.
+        <br><br>
+        Specifically, your payoff is determined by the following formulas:
+        <br><br>
+        &emsp;&emsp; Payoff if <i>Event</i> <b>occurs</b> = \(\left[1-\left(\frac{100-\text{your guess}}{100}\right)^2\right]\times
+    \text{&euro;}{{stakes}}\)
+        <br>
+        &emsp;&emsp; Payoff if <i>Event</i> <b>does not occur</b> = \(\left[1-\left(\frac{\text{your guess}}{100}\right)^2\right]\times \text{&euro;}{{stakes}}\)
+        <br><br>
+        <b><u>Example</u></b>
+        <br>
+        Suppose you are asked to predict how likely that the ball is red. In this case, the <i>Event</i> you are predicting is that the ball randomly drawn by the computer is red.
+        <br><br>
+        Now, suppose you state a high number as your guess that the ball is red. The formulas above imply that your payoff is high if the computer draws a red ball, and your payoff is low if the computer draws any other colored ball.
+        <br><br>
+        To further illustrate, here are some numerical examples pertaining to the same <i>Event</i>:
+        <ol>
+            <li>Suppose your guess is 100. If the computer draws a red ball, then your payoff will be<br>$\left[1-\left(\frac{100-100}{100}\right)^2\right]\times \text{&euro;}{{stakes}}=\text{&euro;}{{stakes}}$.</li>
+            <li>Suppose your guess is 100. If the computer draws a ball of another color, then your payoff will be<br>$\left[1-\left(\frac{100}{100}\right)^2\right]\times \text{&euro;}{{stakes}}=\text{&euro;}0$.</li>
+            <li>Suppose your guess is 70. If the computer draws a red ball, then your payoff will be<br>$\left[1-\left(\frac{100-70}{100}\right)^2\right]\times \text{&euro;}{{stakes}}=\text{&euro;}13.65$.</li>
+            <li>Suppose your guess is 70. If the computer draws a ball of another color, then your payoff will be<br>$\left[1-\left(\frac{70}{100}\right)^2\right]\times \text{&euro;}{{stakes}}=\text{&euro;}7.65$.</li>
+        </ol>
+
+        <b>In summary, your payoff is higher the more accurate is your prediction of the <i>Event</i>.</b>
+
+        <!-- Flat -->
+        {{ elif flat }}
+        At the end of the experiment, if you are paid for Part A, then you will receive a <b>fixed payment of &euro;{{ stakes }}</b> regardless of how accurate your predictions of the <i>Events</i> in all six rounds.
+        {{ endif }}
+        <br><br>
+    </p>
+
+    <p>
+        <button type="button" class="btn btn-primary btn-tab" data-offset="-1" style="background-color: gray;
+        border-color: gray;">Previous</button>
+        <button type="button" class="btn btn-primary btn-tab" data-offset="1" style="float: right;">Next</button>
+    </p>
+</div>
+
+
+<!-- Page 4 -->
+<!-- FINAL PAGE -->
+<div class="tab">
+    <div class="card-header bg-transparent mainheader" >
+        <h4>
+            <center>
+                Instructions for Part A (Page 4)
+            </center>
+        </h4>
+    </div>
+
+    <br>
+
+    <p>
+        Are there any questions? If not, please proceed to answer the practice questions on the next page. The purpose of these practice questions is to make sure that you understand the experiment.
+        <br><br>
+        If you have any questions at any time, please send a message to the Experimenter via Zoom.
+        <br><br>
+    </p>
+
+    <p>
+        <button type="button" class="btn btn-primary btn-tab" data-offset="-1" style="background-color: gray;
+        border-color: gray;">Previous</button>
+        <button class="btn btn-primary" style="float: right;">Continue</button>
+    </p>
+</div>
+
+{{ endblock }}

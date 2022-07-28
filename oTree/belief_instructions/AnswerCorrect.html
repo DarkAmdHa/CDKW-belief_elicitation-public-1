@@ -1,0 +1,44 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+{{ block title }}Instructions{% if session.config.prolific == False %} for Part A{% endif %}{{ endblock }}
+
+{{ block styles }}
+<style>
+    .tab {
+        display: none;
+        text-align: justify;
+    }
+    .otree-title {
+        text-align: center;
+    }
+    .otree-body{
+        font-size: 103%;
+    }
+    .otree-timer {
+        display: none;
+    }
+</style>
+{{ endblock }}
+
+{{ block content }}
+
+<hr>
+
+<br>
+
+<p align="center">
+    You have answered the questions correctly.
+    <br>
+    <br>
+    Please click 'Next' to continue.
+</p>
+
+<br><br>
+
+<div style="text-align: right;">
+    <button class="btn-primary btn" >
+        Next
+    </button>
+</div>
+
+{{ endblock }}

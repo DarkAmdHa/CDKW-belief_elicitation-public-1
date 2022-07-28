@@ -1,0 +1,113 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+{{ block title }}End of Instructions{{ endblock }}
+
+{{ block scripts }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>-->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+var slider = document.getElementById("myRange");
+slider.oninput = function() {
+  active.style.display = "block";
+  inactive.style.display = "none";
+}
+</script>
+<script>
+const sliders = document.querySelectorAll('.slider');
+for(let i = 0;i<sliders.length;i++){
+    sliders[i].addEventListener('mousedown', ()=>{
+        sliders[i].classList.remove('slider-thumb-hidden');
+    });
+}
+</script>
+{{ endblock }}
+
+{{ block styles }}
+<link href="{{ static 'belief-slider-3.css' }}" rel="stylesheet">
+<style>
+    .tab {
+        display: none;
+        text-align: justify;
+    }
+    .otree-title {
+        text-align: center;
+    }
+    .otree-body{
+        font-size: 103%;
+    }
+    .otree-timer {
+        display: none;
+    }
+</style>
+<style>
+    #active {
+        display: none;
+    }
+    #inactive {
+        display: block;
+    }
+</style>
+<style>
+    .slider::-webkit-slider-thumb{
+        transition: opacity 0.5s ease;
+    }
+
+    .slider-thumb-hidden::-webkit-slider-thumb{
+        opacity: 0;
+    }
+</style>
+{{ endblock }}
+
+{{ block content }}
+
+<hr>
+
+<p>
+    {% if session.config.instructionpilot == False %}
+        {% if session.config.simple_instruction == False %}
+        You have answered all the comprehension questions correctly.
+        <br>
+        <br>
+        {% endif %}
+        Before we proceed, please use the slider below to answer the following question:
+        <br>
+        <br>
+    {% else %}
+        Before we proceed with the <b>Understanding Check Questions</b>, please use the slider below to answer the following question.
+        <br>
+        <br>
+    {% endif %}
+    <font size="+2">
+        <b>How certain are you about your understanding of how you will be paid for your predictions?</b>
+    </font>
+    <br>
+    <br>
+</p>
+
+<center>
+    <label for="myRange" class="float-left" style="width:300px"><b>Very uncertain</b></label>
+    <label for="myRange" class="float-right" style="width:300px"><b>Completely certain</b></label>
+    <div class="slidecontainer">
+        <input type="range" min="0" max="10" step="1" value="-1" class="slider slider-thumb-hidden" id="myRange" name="understanding_certainty">
+    </div>
+</center>
+
+<div class="button" align="right" id="active">
+    <br><br>
+    <button class="btn btn-primary mb-3">
+        NEXT
+    </button>
+</div>
+
+<div class="button" align="right" id="inactive">
+    <br>
+    Please adjust the slider.
+    <br>
+    <button class="btn btn-secondary disabled mb-3">
+        NEXT
+    </button>
+</div>
+
+{{ endblock }}

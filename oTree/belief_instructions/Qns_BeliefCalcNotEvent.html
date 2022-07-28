@@ -1,0 +1,57 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+{{ block title }}Comprehension Questions{{ endblock }}
+
+{{ block styles }}
+<style>
+    .tab {
+        display: none;
+        text-align: justify;
+    }
+    .otree-title {
+        text-align: center;
+    }
+    .otree-body{
+        font-size: 103%;
+    }
+    .otree-timer {
+        display: none;
+    }
+</style>
+{{ endblock }}
+
+{{ block content }}
+
+<p>
+    Please answer the following question. You can review the instructions here (INSERT HYPERLINK) if you wish to do so.
+</p>
+
+<hr>
+
+<b>Q4:</b> Suppose the <i>Event</i> you are predicting is that the ball <b>is blue</b>.
+<br>
+Suppose also that your guess is 40.
+<br>
+At the end of the experiment, the computer reveals that the randomly drawn ball <b>is green</b>.
+<br><br>
+{{ if bsr }}
+What is your chance (out of 100) of receiving &euro;{{ stakes }}?
+{{ elif qsr or flat }}
+What is your payoff (in &euro;)?
+{{ endif }}
+<br>
+(You may use a calculator.)
+<br>
+<br>
+{{ form.ctrlqns_beliefcalc_notevent }}
+{{ formfield_errors "ctrlqns_beliefcalc_notevent" }}
+
+<br>
+
+<div style="text-align: center;">
+    <button class="btn-primary btn" >
+        Check Answer
+    </button>
+</div>
+
+{{ endblock }}

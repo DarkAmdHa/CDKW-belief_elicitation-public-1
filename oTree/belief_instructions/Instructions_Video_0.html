@@ -1,0 +1,109 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+{{ block title }}Instructions{% if session.config.prolific == False %} for Part A{% endif %}{{ endblock }}
+
+{{ block styles }}
+<style>
+    .otree-form-errors {
+    visibility: hidden;
+    display: none;
+}
+</style>
+<style>
+    .tab {
+        display: none;
+        text-align: justify;
+    }
+    .otree-title {
+        text-align: center;
+    }
+    .otree-body{
+        font-size: 103%;
+    }
+    .otree-timer {
+        display: none;
+    }
+</style>
+<link href="{{ static 'belief-slider-3.css' }}" rel="stylesheet">
+{{ endblock }}
+
+{{ block scripts }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Codes for math typesetting -->
+<script>
+MathJax = {
+    tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]},
+    startup: {
+        ready: function () {
+            MathJax.startup.defaultReady();
+            document.getElementById('render').disabled = false;
+        }
+    }
+}
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>
+function convert() {
+    var input = document.getElementById("input").value.trim();
+    var button = document.getElementById("render");
+    button.disabled = true;
+    output = document.getElementById('output');
+    output.innerHTML = input;
+    MathJax.texReset();
+    MathJax.typesetClear();
+    MathJax.typesetPromise()
+    .catch(function (err) {
+        output.innerHTML = '';
+        output.appendChild(document.createElement('pre')).appendChild(document.createTextNode(err.message));
+    })
+    .then(function() {
+        button.disabled = false;
+    });
+}
+</script>
+{{ endblock }}
+
+{{ block content }}
+
+<hr>
+
+<p>
+    <br>
+    {% if session.config.prolific %}This experiment {% else %}Part A {% endif %}consists of six rounds of an individual decision-making task. At the end of the experiment,{% if session.config.prolific == False %} if you are paid for Part A, then{% endif %} the computer will randomly pick <b>one of the six rounds</b> for payment.
+    <br><br>
+    In each round, your task is to predict the chances that an "event" will occur.
+    <br><br>
+    For example: What is the chance that a random card drawn from a full deck of standard playing cards is a heart?
+    <br>
+    We want you to predict this chance from 0 to 100%.
+    <br><br>
+    {{ if bsr }}
+    <b>You will want to think about your answer carefully. This is because, based on the prediction you give, we will use a <u><font color="maroon">payment procedure</font></u> that rewards you with up to 100 lottery tickets to earn a prize of {{ if stakeshigh }}{{ stakes }}{{ else }}{{ stakes|to2 }}{{ endif }} euros.</b>
+    <br><br>
+    <b>Each lottery ticket corresponds to a 1% chance to win the prize of {{ if stakeshigh }}{{ stakes }}{{ else }}{{ stakes|to2 }}{{ endif }} euros.</b> So, the more lottery tickets you have, the higher your chances will be to win.
+    {{ elif qsr }}
+    <b>You will want to think about your answer carefully. This is because, based on the prediction you give, we will use a <u><font color="maroon">payment procedure</font></u> that rewards you with up to 100 tickets worth up to a combined maximum value of {{ if stakeshigh }}{{ stakes }}{{ else }}{{ stakes|to2 }}{{ endif }} euros.</b>
+    <br><br>
+    <b>Each ticket is worth {{ if stakeshigh }}<script>document.write({{ stakes }}/100*100)</script> cents{{ else }}<script>document.write({{ stakes }}/100*100)</script> cents{{ endif }}.</b> So, the more tickets you have, the more money you will receive.
+    {{ endif }}
+    <br><br>
+    The number of {{ if bsr }}lottery {{ endif}}tickets you will receive is determined by the following formulas:
+    <br><br>
+    &emsp;&emsp; Number of {{ if bsr }}lottery {{ endif}}tickets if <i>Event</i> <b>occurs</b> = \(\left[1-\left(\frac{100-\text{your prediction}}{100}\right)^2\right]\times 100\)
+    <br>
+    &emsp;&emsp; Number of {{ if bsr }}lottery {{ endif}}tickets if <i>Event</i> <b>does not occur</b> = \(\left[1-\left(\frac{\text{your prediction}}{100}\right)^2\right]\times 100\)
+    <br><br>
+    <b>In summary, you will receive more {{ if bsr }}lottery {{ endif}}tickets on average if your prediction of the <i>Event</i> is more accurate.</b>
+</p>
+
+<div style="text-align: center;">
+    <br>
+    <button class="btn-primary btn" >
+        CONTINUE
+    </button>
+</div>
+
+{{ endblock }}

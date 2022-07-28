@@ -1,0 +1,45 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+{{ block title }}Comprehension Questions{{ endblock }}
+
+{{ block styles }}
+<style>
+    .tab {
+        display: none;
+        text-align: justify;
+    }
+    .otree-title {
+        text-align: center;
+    }
+    .otree-body{
+        font-size: 103%;
+    }
+    .otree-timer {
+        display: none;
+    }
+</style>
+{{ endblock }}
+
+{{ block content }}
+
+<p>
+    Please answer the following question. You can review the instructions here (INSERT HYPERLINK) if you wish to do so.
+</p>
+
+<hr>
+
+<b>Q1:</b> I will be paid for the decisions I made in all three parts of the experiments today. True or False?
+<br>
+<br>
+{{ form.ctrlqns_exptaskpayment }}
+{{ formfield_errors "ctrlqns_exptaskpayment" }}
+
+<br>
+
+<div style="text-align: center;">
+    <button class="btn-primary btn" >
+        Check Answer
+    </button>
+</div>
+
+{{ endblock }}

@@ -1,0 +1,69 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+{{ block title }}{% if session.config.prolific %}Experiment{% else %}Part A{% endif %}{{ endblock }}
+
+{{ block styles }}
+<style>
+    .tab {
+        display: none;
+        text-align: justify;
+    }
+    .otree-title {
+        text-align: center;
+    }
+    .otree-body{
+        font-size: 103%;
+    }
+    .otree-timer {
+        display: none;
+    }
+</style>
+{{ endblock }}
+
+{{ block content }}
+
+<hr>
+
+<p align="left">
+    <br>
+    {% if session.config.prolific %}We are now ready to begin the experiment.{% else %}We are now ready to begin Part A.{% endif %}
+    {% if session.config.simple_instruction == False %}
+    <br><br>
+    Instead of predicting the color of a card drawn from a set of standard playing cards, <b>you will be making predictions pertaining to the color of a ball drawn from an urn</b>.
+    {% else %}
+    <br><br>
+    <b>You will be making predictions pertaining to the color of a ball drawn from an urn</b>.
+    {% endif %}
+    <br><br>
+    Specifically, in each round, the computer will present you with an urn containing {{ session.config.numballs }} balls. Note that you will be presented with a new urn at the beginning of each round. <b>Hence, the composition of the urn will be different in each round.</b>
+    <br><br>
+    At the beginning of each round, the computer will reveal to you some information about the composition of the urn. The computer will then randomly draw a ball from the urn.
+    <br><br>
+    <b>Your task is to make a prediction pertaining to the color of the ball randomly drawn by the computer.</b>
+    <br><br>
+    <b>Your payment based on your prediction {% if session.config.prolific == False %} in Part A{% endif %} will follow the <font color="maroon">payment procedure</font> we just explained.</b>
+    <br><br>
+    {{ if bsr }}
+    <b>Each lottery ticket (up to a maximum of 100 lottery tickets) corresponds to a 1% chance to win the prize of {{ if stakeshigh }}{{ stakes }}{{ else }}{{ stakes|to2 }}{{ endif }} euros.</b>
+    {{ elif qsr }}
+    <b>Each ticket (up to a maximum of 100 tickets) is worth {{ if stakeshigh }}<script>document.write({{ stakes }}/100*100)</script> cents{{ else }}<script>document.write({{ stakes }}/100*100)</script> cents{{ endif }}, up to a combined maximum value of {{ if stakeshigh }}{{ stakes }}{{ else }}{{ stakes|to2 }}{{ endif }} euros.</b>
+    {{ endif }}
+    <br><br>
+    {% if session.config.prolific == False %}
+    Do you have any questions? If you do, please send a message to the Experimenter via Zoom.
+    <br><br>
+    If not, please press the button to begin Round 1 of Part A.
+    {% else %}
+    Please press the button to begin Round 1.
+    {% endif %}
+</p>
+
+<br><br>
+
+<div style="text-align: center;">
+    <button class="btn-primary btn" >
+        BEGIN{% if session.config.prolific == False %} PART A{% endif %}
+    </button>
+</div>
+
+{{ endblock }}

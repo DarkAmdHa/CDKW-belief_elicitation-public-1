@@ -1,0 +1,46 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{{ block title }}
+    Random Numbers in the Experiment
+{{ endblock }}
+
+{{ block content }}
+<style>
+    .otree-title {
+      text-align: center;
+    }
+
+    #form {
+      text-align: justify;
+      font-size: 103%;
+    }
+
+    .otree-timer {
+        display: none;
+    }
+</style>
+
+<hr>
+
+<p>
+    In this experiment, there are a number of stages that will involve random draws of numbers to determine outcomes and payments.
+    <br><br>
+    To ensure transparency in the payment process, we have pre-determined all random draws prior to the experiment. The pre-determined draws are stored in the following Excel spreadsheet.
+    <br><br>
+    Please feel free to download the file for your record. The password to open this file will be provided to you at the end of the experiment.
+    <br><br>
+    To determine the outcomes and payments for <b>you</b> in this experiment, we will use the draws corresponding to <b>ID number {{ player.randomizationID }}</b> in the spreadsheet. You may wish to write this number down.
+    <br><br>
+    You may download the file by clicking <a href="{{ session.config.randomizationfile_locked }}" target="_blank">here</a>.
+</p>
+
+<br>
+
+<br>
+
+<div style = "text-align: center">
+    <button class="btn-primary btn">CONTINUE</button>
+</div>
+
+{{ endblock }}

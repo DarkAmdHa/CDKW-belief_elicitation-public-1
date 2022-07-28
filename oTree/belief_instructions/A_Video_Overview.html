@@ -1,0 +1,81 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+{{ block title }}Instructions{% if session.config.prolific == False %} for Part A{% endif %}{{ endblock }}
+
+{{ block styles }}
+<style>
+    .tab {
+        display: none;
+        text-align: justify;
+    }
+    .otree-title {
+        text-align: center;
+    }
+    .otree-body{
+        font-size: 103%;
+    }
+    .otree-timer {
+        display: none;
+    }
+</style>
+{{ endblock }}
+
+{{ block content }}
+
+<hr>
+
+{% if session.config.instructionpilot == False %}
+
+<p>
+    <br>
+    {% if session.config.prolific == False %}We will now begin Part A. {% endif %}Please proceed to read the instructions over the next few pages.
+    {% if session.config.simple_instruction == False %}
+    <br><br>
+    <b>As we progress, you will be asked to answer a set of comprehension questions.</b>
+    <br><br>
+    {% if session.config.prolific %}
+    If you make too many failed attempts on too many questions, then you may forgo the bonus payments from the experiment.
+    {% else %}
+    If you make too many failed attempts on too many questions, then we may remove you from the experiment, and you will forgo the payments from the rest of the experiment.
+    {% endif %}
+    <br><br>
+    <b>Hence, we recommend you review the instructions carefully before proceeding.</b>
+    <br><br>
+    {% else %}
+    <br><br>
+    <b>We recommend you review the instructions carefully before proceeding.</b>
+    <br><br>
+    {% endif %}
+</p>
+
+<div style="text-align: right;">
+    <button class="btn-primary btn" >
+        Next
+    </button>
+</div>
+
+{% else %}
+
+<p>
+    <br>
+    In this study, we would like to <b>test your understanding of the instructions for a task</b>.
+    <br><br>
+    You will be provided with detailed instructions on the task over the next few pages. However, you will <b>not</b> be required to complete the task.
+    <br><br>
+    Instead, we will ask you a set of <b>Understanding Check Questions</b> after all the instructions have been completed. Your bonus payments will depend on how accurate your responses to the comprehension questions are.
+    <br><br>
+    <b>Hence, even though you will not be completing the task that is described, we recommend you review the instructions carefully before proceeding.</b>
+    <br><br>
+    Press the button below to begin reading the instructions.
+    <br><br>
+
+<div style="text-align: center;">
+    <button class="btn-danger btn" >
+        BEGIN INSTRUCTIONS
+    </button>
+</div>
+</p>
+
+{% endif %}
+
+{{ endblock }}
