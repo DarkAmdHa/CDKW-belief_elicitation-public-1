@@ -7,7 +7,8 @@ SESSION_CONFIGS = [
         name='BSR_Low_10ball_ProlificPilot',
         app_sequence=[
             'randomization_id',
-            'belief_instructions',
+            # 'belief_instructions',
+            'belief_task',
         ],
         num_demo_participants=3,
         showupfee=2,
