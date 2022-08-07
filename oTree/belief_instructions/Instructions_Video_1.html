@@ -199,7 +199,7 @@
     opacity: 1;
   }
 
-  input[type='range'] {
+  #video-controls input[type='range'] {
     -webkit-appearance: none;
     margin-right: 15px;
     height: 10px;
@@ -211,7 +211,7 @@
     background-repeat: no-repeat;
   }
 
-  input[type='range']::-webkit-slider-thumb {
+  #video-controls input[type='range']::-webkit-slider-thumb {
     -webkit-appearance: none;
     height: 20px;
     width: 20px;
@@ -222,14 +222,14 @@
     transition: background 0.3s ease-in-out;
   }
 
-  input[type='range']::-webkit-slider-runnable-track {
+  #video-controls input[type='range']::-webkit-slider-runnable-track {
     -webkit-appearance: none;
     box-shadow: none;
     border: none;
     background: transparent;
   }
 
-  #volume-bar {
+  #video-controls #volume-bar {
     margin: 0;
     background-size: 100% 100%;
   }
@@ -310,8 +310,7 @@
             document.getElementById("play-pause").classList.remove('playing')
         }
 
-      const rangeInputs = document.querySelectorAll('input[type="range"]')
-      const numberInput = document.querySelector('input[type="number"]')
+      const rangeInputs = document.querySelectorAll('#video-controls input[type="range"]')
 
       function handleInputChange(target) {
           let min,max,val
