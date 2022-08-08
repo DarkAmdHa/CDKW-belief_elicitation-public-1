@@ -1,1155 +1,1598 @@
-{% extends "global/Page.html" %}
-{% load otree %}
-{{ block title }}{% if session.config.prolific %}Round {{ player.round_number }}{% else %}Part A (Round {{ player.round_number }}){% endif %}{{ endblock }}
-
-{{ block scripts }}
+{% extends "global/Page.html" %} {% load otree %} {{ block title }}{% if
+session.config.prolific %}Round {{ player.round_number }}{% else %}Part A (Round
+{{ player.round_number }}){% endif %}{{ endblock }} {{ block scripts }}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link
+  rel="stylesheet"
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
-var slider = document.getElementById("myRange1");
-var output2 = document.getElementById("demo2");
-var output1 = document.getElementById("demo1");
-<!--output2.innerHTML = slider.value;-->
-<!--output1.innerHTML = slider.value;-->
+  var slider = document.getElementById('myRange1')
+  var output2 = document.getElementById('demo2')
+  var output1 = document.getElementById('demo1')
+  <!--output2.innerHTML = slider.value;-->
+  <!--output1.innerHTML = slider.value;-->
 
-slider.oninput = function() {
-  output2.innerHTML = this.value;
-  output1.innerHTML = 100-this.value;
-  active1.style.display = "block";
-  inactive1.style.display = "none";
-}
+  slider.oninput = function () {
+    output2.innerHTML = this.value
+    output1.innerHTML = 100 - this.value
+    active1.style.display = 'block'
+    inactive1.style.display = 'none'
+  }
 </script>
 <script>
-var slider = document.getElementById("myRange2");
-var minvalue = document.getElementById("min");
-var maxvalue = document.getElementById("max");
-var beliefvalue = {{ player.belief }};
+  var slider = document.getElementById("myRange2");
+  var minvalue = document.getElementById("min");
+  var maxvalue = document.getElementById("max");
+  var beliefvalue = {{ player.belief }};
 
-slider.oninput = function() {
-  minvalue.innerHTML = beliefvalue-(100-this.value);
-  maxvalue.innerHTML = beliefvalue+(100-this.value);
-  if (minvalue.innerHTML<0) {
-    minvalue.innerHTML=0;
+  slider.oninput = function() {
+    minvalue.innerHTML = beliefvalue-(100-this.value);
+    maxvalue.innerHTML = beliefvalue+(100-this.value);
+    if (minvalue.innerHTML<0) {
+      minvalue.innerHTML=0;
+    }
+    if (maxvalue.innerHTML>100) {
+      maxvalue.innerHTML=100;
+    }
+    if (this.value==100) {
+      certain2.style.display = "block";
+      uncertain2.style.display = "none";
+    }
+    if (this.value!=100) {
+      certain2.style.display = "none";
+      uncertain2.style.display = "block";
+    }
+    instruction2.style.display = "none";
+    active2.style.display = "block";
+    inactive2.style.display = "none";
   }
-  if (maxvalue.innerHTML>100) {
-    maxvalue.innerHTML=100;
-  }
-  if (this.value==100) {
-    certain2.style.display = "block";
-    uncertain2.style.display = "none";
-  }
-  if (this.value!=100) {
-    certain2.style.display = "none";
-    uncertain2.style.display = "block";
-  }
-  instruction2.style.display = "none";
-  active2.style.display = "block";
-  inactive2.style.display = "none";
-}
 </script>
 <script type="text/javascript">
-//Array containing possible colors,and the number of balls already colored with that given color
-let allColors;
-{% if treatrisk %}
-    {% if prior == 50 %}
-        allColors = [
-            {
-                color: '{{ slicecolor1 }}',
-                number: 0
-            },
-            {
-                color: '{{ slicecolor2 }}',
-                number: 0
-            }
-        ];
-    {% else %}
-        allColors = [
-            {
-                color: '{{ slicecolor1 }}',
-                number: 0
-            },
-            {
-                color: '{{ slicecolor2 }}',
-                number: 0
-            },
-            {
-                color: '{{ slicecolor3 }}',
-                number: 0
-            },
-            {
-                color: '{{ slicecolor4 }}',
-                number: 0
-            },
-            {
-                color: '{{ slicecolor5 }}',
-                number: 0
-            },
-        ];
-    {% endif %}
-{% else %}
-    allColors =  [];
-{% endif %}
+  //Array containing possible colors,and the number of balls already colored with that given color
+  let allColors;
+  {% if treatrisk %}
+      {% if prior == 50 %}
+          allColors = [
+              {
+                  color: '{{ slicecolor1 }}',
+                  number: 0
+              },
+              {
+                  color: '{{ slicecolor2 }}',
+                  number: 0
+              }
+          ];
+      {% else %}
+          allColors = [
+              {
+                  color: '{{ slicecolor1 }}',
+                  number: 0
+              },
+              {
+                  color: '{{ slicecolor2 }}',
+                  number: 0
+              },
+              {
+                  color: '{{ slicecolor3 }}',
+                  number: 0
+              },
+              {
+                  color: '{{ slicecolor4 }}',
+                  number: 0
+              },
+              {
+                  color: '{{ slicecolor5 }}',
+                  number: 0
+              },
+          ];
+      {% endif %}
+  {% else %}
+      allColors =  [];
+  {% endif %}
 </script>
 <script>
-const urnContainer = document.querySelector('.urn');
-const totalNumOfBalls = {{ session.config.numballs }}
-//Ball Object
-  class Ball {
+  const urnContainer = document.querySelector('.urn');
+  const totalNumOfBalls = {{ session.config.numballs }}
+  //Ball Object
+    class Ball {
 
-    constructor(x, y, color,colorName, border, size) {
-       this.x = x;
-       this.y = y;
-       this.color = color;
-       this.colorName = colorName;
-       this.border = border;
-    }
-    //Function to "draw" the ball using the details it's object has
-    draw() {
-        const ball = document.createElement('div');
-        ball.classList.add('ball');
-        ball.style.left = this.x + 'px';
-        ball.style.top = this.y + 'px';
-        if(this.border){
-            ball.classList.add('uncolored');
-        }else{
-            ball.classList.add(this.colorName);
-            ball.style.background = this.color;
-        }
-        urnContainer.appendChild(ball);
+      constructor(x, y, color,colorName, border, size) {
+         this.x = x;
+         this.y = y;
+         this.color = color;
+         this.colorName = colorName;
+         this.border = border;
       }
- }
-
- //A sort of flag to know that the balls are already highlighted, in order to prevent multiple calls to the highlighting function
- let ballsHighlighted = false;
- const highlightBalls = function(isColor, colorName) {
-     //If already highlighted, break out
-     if(ballsHighlighted){
-        return;
-     }
-     ballsHighlighted = true;
-
-    let ballsToHighlight,
-        rowToHighlight,
-    className;
-
-    //Highlight the balls with the specified color
-    if(isColor){
-        ballsToHighlight = urnContainer.querySelectorAll(`.ball.${colorName}`);
-        rowToHighlight = urnContainer.querySelector(`.color-row.${colorName}`);
-        className = 'highlighted'
-
-        rowToHighlight.classList.toggle(`${className}`);
-    //Highlight the balls that are NOT of the specified color
-    }else{
-        ballsToHighlight = urnContainer.querySelectorAll(`.ball:not(.${colorName})`);
-        rowToHighlight = urnContainer.querySelectorAll(`.color-row:not(.${colorName})`);
-        className = 'highlightedAll';
-        for (var i =0;i<rowToHighlight.length; i++){
-            rowToHighlight[i].classList.toggle(`${className}`);
+      //Function to "draw" the ball using the details it's object has
+      draw() {
+          const ball = document.createElement('div');
+          ball.classList.add('ball');
+          ball.style.left = this.x + 'px';
+          ball.style.top = this.y + 'px';
+          if(this.border){
+              ball.classList.add('uncolored');
+          }else{
+              ball.classList.add(this.colorName);
+              ball.style.background = this.color;
+          }
+          urnContainer.appendChild(ball);
         }
-    }
+   }
 
-    for (var i =0;i<ballsToHighlight.length; i++){
-        ballsToHighlight[i].classList.toggle(`${className}`);
-    }
- }
+   //A sort of flag to know that the balls are already highlighted, in order to prevent multiple calls to the highlighting function
+   let ballsHighlighted = false;
+   const highlightBalls = function(isColor, colorName) {
+       //If already highlighted, break out
+       if(ballsHighlighted){
+          return;
+       }
+       ballsHighlighted = true;
 
- const unhighlightBalls = (isColor, colorName)=>{
-      if(!ballsHighlighted){
-        return;
-     }
+      let ballsToHighlight,
+          rowToHighlight,
+      className;
 
-     let ballsToHighlight,
-         rowToHighlight,
-        className;
+      //Highlight the balls with the specified color
+      if(isColor){
+          ballsToHighlight = urnContainer.querySelectorAll(`.ball.${colorName}`);
+          rowToHighlight = urnContainer.querySelector(`.color-row.${colorName}`);
+          className = 'highlighted'
 
-    //Highlight the balls with the specified color
-    if(isColor){
-        ballsToHighlight = urnContainer.querySelectorAll(`.ball.${colorName}`);
-        rowToHighlight = urnContainer.querySelector(`.color-row.${colorName}`);
-        className = 'highlighted'
+          rowToHighlight.classList.toggle(`${className}`);
+      //Highlight the balls that are NOT of the specified color
+      }else{
+          ballsToHighlight = urnContainer.querySelectorAll(`.ball:not(.${colorName})`);
+          rowToHighlight = urnContainer.querySelectorAll(`.color-row:not(.${colorName})`);
+          className = 'highlightedAll';
+          for (var i =0;i<rowToHighlight.length; i++){
+              rowToHighlight[i].classList.toggle(`${className}`);
+          }
+      }
 
-        rowToHighlight.classList.toggle(`${className}`);
+      for (var i =0;i<ballsToHighlight.length; i++){
+          ballsToHighlight[i].classList.toggle(`${className}`);
+      }
+   }
 
-    //Highlight the balls that are NOT of the specified color
-    }else{
-        ballsToHighlight = urnContainer.querySelectorAll(`.ball:not(.${colorName})`);
-        rowToHighlight = urnContainer.querySelectorAll(`.color-row:not(.${colorName})`);
-        className = 'highlightedAll';
-        for (var i =0;i<rowToHighlight.length; i++){
-            rowToHighlight[i].classList.toggle(`${className}`);
-        }
-    }
+   const unhighlightBalls = (isColor, colorName)=>{
+        if(!ballsHighlighted){
+          return;
+       }
 
-    for (var i=0;i<ballsToHighlight.length; i++){
-        ballsToHighlight[i].classList.toggle(`${className}`);
-    }
-    ballsHighlighted = false;
-}
+       let ballsToHighlight,
+           rowToHighlight,
+          className;
 
- //Balls array, used to later draw each ball object within
-balls = [];
+      //Highlight the balls with the specified color
+      if(isColor){
+          ballsToHighlight = urnContainer.querySelectorAll(`.ball.${colorName}`);
+          rowToHighlight = urnContainer.querySelector(`.color-row.${colorName}`);
+          className = 'highlighted'
 
-if(totalNumOfBalls == 100){
-    let size = 20,
-        yPos = 0,
-        i=0,
-        x=17,
-        y=278,
-        increment = 5;
-        while(balls.length<totalNumOfBalls){
-    //First row of balls is unique, in order to account for the curved section of the jar
-    if(yPos === 0){
-        ball = new Ball(
-        x,
-        y,
-        '#333',
-        'red',
-        true
-    );
-    x+=size+2;
-    //If reached the end of the first row(right side of the jar), go to the next row
-    if(x>220){
-        yPos += 1;
-    }
-    balls.push(ball);
-}
-//All other rows
-else if(yPos >= 1){
-    if(x>=220){
-        yPos +=1;
-        y-=size+2;
-        x=0;
-    }else{
-        x+=size+increment;
-    }
-    ball = new Ball(
-        x,
-        y,
-        '#333',
-        'red',
-        true
-    );
-    balls.push(ball);
+          rowToHighlight.classList.toggle(`${className}`);
 
-    }
+      //Highlight the balls that are NOT of the specified color
+      }else{
+          ballsToHighlight = urnContainer.querySelectorAll(`.ball:not(.${colorName})`);
+          rowToHighlight = urnContainer.querySelectorAll(`.color-row:not(.${colorName})`);
+          className = 'highlightedAll';
+          for (var i =0;i<rowToHighlight.length; i++){
+              rowToHighlight[i].classList.toggle(`${className}`);
+          }
+      }
 
-}
-}else{
-    document.querySelector('.urn').classList.add('urn-10')
-    let size = 45,
-        yPos = 0,
-        i=0,
-        x=10,
-        y=210,
-        increment = 5;
+      for (var i=0;i<ballsToHighlight.length; i++){
+          ballsToHighlight[i].classList.toggle(`${className}`);
+      }
+      ballsHighlighted = false;
+  }
 
+   //Balls array, used to later draw each ball object within
+  balls = [];
 
-    while(balls.length<totalNumOfBalls){
-    //First row of balls is unique, in order to account for the curved section of the jar
-    if(yPos === 0){
-        ball = new Ball(
-        x,
-        y,
-        '#333',
-        'red',
-        true
-    );
-    x+=size+2;
-    //If reached the end of the first row(right side of the jar), go to the next row
-    if(x>80){
-        yPos += 1;
-    }
-    balls.push(ball);
-}
-//All other rows
-else if(yPos >= 1){
-    if(x>=50){
-        yPos +=1;
-        y-=size+2;
-        x=10;
-    }else{
-        x+=size+increment;
-    }
-    ball = new Ball(
-        x,
-        y,
-        '#333',
-        'red',
-        true
-    );
-    balls.push(ball);
+  if(totalNumOfBalls == 100){
+      let size = 20,
+          yPos = 0,
+          i=0,
+          x=17,
+          y=278,
+          increment = 5;
+          while(balls.length<totalNumOfBalls){
+      //First row of balls is unique, in order to account for the curved section of the jar
+      if(yPos === 0){
+          ball = new Ball(
+          x,
+          y,
+          '#333',
+          'red',
+          true
+      );
+      x+=size+2;
+      //If reached the end of the first row(right side of the jar), go to the next row
+      if(x>220){
+          yPos += 1;
+      }
+      balls.push(ball);
+  }
+  //All other rows
+  else if(yPos >= 1){
+      if(x>=220){
+          yPos +=1;
+          y-=size+2;
+          x=0;
+      }else{
+          x+=size+increment;
+      }
+      ball = new Ball(
+          x,
+          y,
+          '#333',
+          'red',
+          true
+      );
+      balls.push(ball);
 
-    }
+      }
 
-}
-}
+  }
+  }else{
+      document.querySelector('.urn').classList.add('urn-10')
+      let size = 45,
+          yPos = 0,
+          i=0,
+          x=10,
+          y=210,
+          increment = 5;
 
 
+      while(balls.length<totalNumOfBalls){
+      //First row of balls is unique, in order to account for the curved section of the jar
+      if(yPos === 0){
+          ball = new Ball(
+          x,
+          y,
+          '#333',
+          'red',
+          true
+      );
+      x+=size+2;
+      //If reached the end of the first row(right side of the jar), go to the next row
+      if(x>80){
+          yPos += 1;
+      }
+      balls.push(ball);
+  }
+  //All other rows
+  else if(yPos >= 1){
+      if(x>=50){
+          yPos +=1;
+          y-=size+2;
+          x=10;
+      }else{
+          x+=size+increment;
+      }
+      ball = new Ball(
+          x,
+          y,
+          '#333',
+          'red',
+          true
+      );
+      balls.push(ball);
+
+      }
+
+  }
+  }
 
 
-//Loop through each ball object in the 'balls' array, in order to "draw" each of them
-function loop() {
-    for (const ball of balls) {
-      ball.draw();
-    }
-}
-
-//Call to drawing functions
-loop();
-
-const allBalls = document.querySelectorAll('.ball'),
-numberOfColors = allColors.length;
 
 
-//Function used in order to get a random color from the array, making sure that the number of balls of the returned color has not already surpassed
-// the possible maximum
-const getRandomColor = function(){
-    let colorToAdd = allColors[Math.floor(Math.random() * numberOfColors)];
-    while(colorToAdd.number>=(100/numberOfColors)){
-        colorToAdd = allColors[Math.floor(Math.random() * numberOfColors)];
-    }
-    colorToAdd.number = `${parseInt(colorToAdd.number)+1}`;
-    return colorToAdd;
-}
+  //Loop through each ball object in the 'balls' array, in order to "draw" each of them
+  function loop() {
+      for (const ball of balls) {
+        ball.draw();
+      }
+  }
 
-//Function used to get consecutive colors, in case on wants to fill each row with the same color
-//The colors of each row are still randomized
-// let colorIndex =Math.floor(Math.random() * numberOfColors),
-//     colorToAdd = allColors[colorIndex];
-// const getConsecutiveColors = function(){
-//     if(colorToAdd.number>=100/numberOfColors){
-//         colorIndex = Math.floor(Math.random() * numberOfColors);
-//         colorToAdd = allColors[colorIndex];
-//         while(colorToAdd.number>=(100/numberOfColors)){
-//             colorIndex = Math.floor(Math.random() * numberOfColors)
-//             colorToAdd = allColors[colorIndex];
-//         }
-//     }
-//     colorToAdd.number = `${parseInt(colorToAdd.number)+1}`;
-//     return colorToAdd;
-// }
+  //Call to drawing functions
+  loop();
 
-let colorIndex = 0,
-    colorToAdd = allColors[colorIndex];
-const getConsecutiveColors = function(){
-    if(colorToAdd.number>=totalNumOfBalls/numberOfColors){
-        colorIndex++;
-        colorToAdd = allColors[colorIndex];
-        while(colorToAdd.number>=(totalNumOfBalls/numberOfColors)){
-            colorIndex = Math.floor(Math.random() * numberOfColors)
-            colorToAdd = allColors[colorIndex];
-        }
-    }
-    colorToAdd.number = `${parseInt(colorToAdd.number)+1}`;
-    return colorToAdd;
-}
+  const allBalls = document.querySelectorAll('.ball'),
+  numberOfColors = allColors.length;
+
+
+  //Function used in order to get a random color from the array, making sure that the number of balls of the returned color has not already surpassed
+  // the possible maximum
+  const getRandomColor = function(){
+      let colorToAdd = allColors[Math.floor(Math.random() * numberOfColors)];
+      while(colorToAdd.number>=(100/numberOfColors)){
+          colorToAdd = allColors[Math.floor(Math.random() * numberOfColors)];
+      }
+      colorToAdd.number = `${parseInt(colorToAdd.number)+1}`;
+      return colorToAdd;
+  }
+
+  //Function used to get consecutive colors, in case on wants to fill each row with the same color
+  //The colors of each row are still randomized
+  // let colorIndex =Math.floor(Math.random() * numberOfColors),
+  //     colorToAdd = allColors[colorIndex];
+  // const getConsecutiveColors = function(){
+  //     if(colorToAdd.number>=100/numberOfColors){
+  //         colorIndex = Math.floor(Math.random() * numberOfColors);
+  //         colorToAdd = allColors[colorIndex];
+  //         while(colorToAdd.number>=(100/numberOfColors)){
+  //             colorIndex = Math.floor(Math.random() * numberOfColors)
+  //             colorToAdd = allColors[colorIndex];
+  //         }
+  //     }
+  //     colorToAdd.number = `${parseInt(colorToAdd.number)+1}`;
+  //     return colorToAdd;
+  // }
+
+  let colorIndex = 0,
+      colorToAdd = allColors[colorIndex];
+  const getConsecutiveColors = function(){
+      if(colorToAdd.number>=totalNumOfBalls/numberOfColors){
+          colorIndex++;
+          colorToAdd = allColors[colorIndex];
+          while(colorToAdd.number>=(totalNumOfBalls/numberOfColors)){
+              colorIndex = Math.floor(Math.random() * numberOfColors)
+              colorToAdd = allColors[colorIndex];
+          }
+      }
+      colorToAdd.number = `${parseInt(colorToAdd.number)+1}`;
+      return colorToAdd;
+  }
 </script>
 <script>
-if(allColors.length>0){
-    allBalls.forEach(ball =>{
-        ball.classList.remove('uncolored');
-        //If you want random colors, use the following line of code
-        // let colorToAdd = getRandomColor();
-        //Else:
-        let colorToAdd = getConsecutiveColors();
-        let colorName = colorToAdd.color;
-        ball.style.background = colorName.replace(/\s/g, "").toLowerCase();
-        ball.classList.add(colorName.replace(/\s/g, "-").toLowerCase());
+  if(allColors.length>0){
+      allBalls.forEach(ball =>{
+          ball.classList.remove('uncolored');
+          //If you want random colors, use the following line of code
+          // let colorToAdd = getRandomColor();
+          //Else:
+          let colorToAdd = getConsecutiveColors();
+          let colorName = colorToAdd.color;
+          ball.style.background = colorName.replace(/\s/g, "").toLowerCase();
+          ball.classList.add(colorName.replace(/\s/g, "-").toLowerCase());
+      })
+      //Set left column rows positions
+      let leftColumnRows = document.querySelectorAll('.color-row'),
+          colorBefore ='blank',
+          totalRows,
+          indexToShowText;
+      if(totalNumOfBalls === 100){
+          totalRows = 10;
+          indexToShowText = 10;
+      }
+      else if(totalNumOfBalls === 10){
+          totalRows = 5;
+          indexToShowText = 2;
+      }
+
+
+      for(let i = totalRows - 1;i>=0;i--){
+          console.log(i * indexToShowText);
+          leftColumnRows[i].style.top = `${allBalls[i*indexToShowText].offsetTop - 3}px`;
+          if(allBalls[i*indexToShowText].style.background != '' && colorBefore != allBalls[i*indexToShowText].style.background){
+              leftColumnRows[i].innerText = `${document.querySelectorAll('.' + allBalls[i*indexToShowText].style.background).length} ${allBalls[i*indexToShowText].style.background} balls`;
+              leftColumnRows[i].classList.add(`${allBalls[i*indexToShowText].style.background}`)
+              colorBefore = allBalls[i*indexToShowText].style.background;
+          }
+      }
+  }
+  const predictedEvent = '{{colorevent}}';
+  {% if treatrisk %}
+      {% if predictfalse %}
+          setTimeout(()=>{
+              highlightBalls(false, predictedEvent.replace(/\s/g, "-").toLowerCase());
+              //Unhighlight after 2seconds
+              setTimeout(()=>{
+                  unhighlightBalls(false, predictedEvent.replace(/\s/g, "-").toLowerCase())
+              },2000);
+
+              document.querySelector('.predicted-event').addEventListener('mouseenter', ()=>{
+                  highlightBalls(false, predictedEvent.replace(/\s/g, "-").toLowerCase());
+              });
+              document.querySelector('.predicted-event').addEventListener('mouseleave', ()=>{
+                  unhighlightBalls(false, predictedEvent.replace(/\s/g, "-").toLowerCase());
+              });
+          },1000);
+      {% else %}
+          setTimeout(()=>{
+              highlightBalls(true, predictedEvent.replace(/\s/g, "-").toLowerCase());
+              //Unhighlight after 2seconds
+              setTimeout(()=>{
+                  unhighlightBalls(true, predictedEvent.replace(/\s/g, "-").toLowerCase())
+              },2000);
+
+              document.querySelector('.predicted-event').addEventListener('mouseenter', ()=>{
+                  highlightBalls(true, predictedEvent.replace(/\s/g, "-").toLowerCase());
+              });
+              document.querySelector('.predicted-event').addEventListener('mouseleave', ()=>{
+                  unhighlightBalls(true, predictedEvent.replace(/\s/g, "-").toLowerCase());
+              });
+          },1000);
+      {% endif %}
+  {% endif %}
+</script>
+<script>
+  const sliders = document.querySelectorAll('.slider')
+  for (let i = 0; i < sliders.length; i++) {
+    sliders[i].addEventListener('mousedown', () => {
+      sliders[i].classList.remove('slider-thumb-hidden')
     })
-    //Set left column rows positions
-    let leftColumnRows = document.querySelectorAll('.color-row'),
-        colorBefore ='blank',
-        totalRows,
-        indexToShowText;
-    if(totalNumOfBalls === 100){
-        totalRows = 10;
-        indexToShowText = 10;
-    }
-    else if(totalNumOfBalls === 10){
-        totalRows = 5;
-        indexToShowText = 2;
-    }
-
-
-    for(let i = totalRows - 1;i>=0;i--){
-        console.log(i * indexToShowText);
-        leftColumnRows[i].style.top = `${allBalls[i*indexToShowText].offsetTop - 3}px`;
-        if(allBalls[i*indexToShowText].style.background != '' && colorBefore != allBalls[i*indexToShowText].style.background){
-            leftColumnRows[i].innerText = `${document.querySelectorAll('.' + allBalls[i*indexToShowText].style.background).length} ${allBalls[i*indexToShowText].style.background} balls`;
-            leftColumnRows[i].classList.add(`${allBalls[i*indexToShowText].style.background}`)
-            colorBefore = allBalls[i*indexToShowText].style.background;
-        }
-    }
-}
-const predictedEvent = '{{colorevent}}';
-{% if treatrisk %}
-    {% if predictfalse %}
-        setTimeout(()=>{
-            highlightBalls(false, predictedEvent.replace(/\s/g, "-").toLowerCase());
-            //Unhighlight after 2seconds
-            setTimeout(()=>{
-                unhighlightBalls(false, predictedEvent.replace(/\s/g, "-").toLowerCase())
-            },2000);
-
-            document.querySelector('.predicted-event').addEventListener('mouseenter', ()=>{
-                highlightBalls(false, predictedEvent.replace(/\s/g, "-").toLowerCase());
-            });
-            document.querySelector('.predicted-event').addEventListener('mouseleave', ()=>{
-                unhighlightBalls(false, predictedEvent.replace(/\s/g, "-").toLowerCase());
-            });
-        },1000);
-    {% else %}
-        setTimeout(()=>{
-            highlightBalls(true, predictedEvent.replace(/\s/g, "-").toLowerCase());
-            //Unhighlight after 2seconds
-            setTimeout(()=>{
-                unhighlightBalls(true, predictedEvent.replace(/\s/g, "-").toLowerCase())
-            },2000);
-
-            document.querySelector('.predicted-event').addEventListener('mouseenter', ()=>{
-                highlightBalls(true, predictedEvent.replace(/\s/g, "-").toLowerCase());
-            });
-            document.querySelector('.predicted-event').addEventListener('mouseleave', ()=>{
-                unhighlightBalls(true, predictedEvent.replace(/\s/g, "-").toLowerCase());
-            });
-        },1000);
-    {% endif %}
-{% endif %}
-</script>
-<script>
-const sliders = document.querySelectorAll('.slider');
-for(let i = 0;i<sliders.length;i++){
-    sliders[i].addEventListener('mousedown', ()=>{
-        sliders[i].classList.remove('slider-thumb-hidden');
-    });
-}
+  }
 </script>
 <!-- Codes for math typesetting -->
 <script>
-MathJax = {
-    tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]},
+  MathJax = {
+    tex: {
+      inlineMath: [
+        ['$', '$'],
+        ['\\(', '\\)'],
+      ],
+    },
     startup: {
-        ready: function () {
-            MathJax.startup.defaultReady();
-            document.getElementById('render').disabled = false;
-        }
-    }
-}
+      ready: function () {
+        MathJax.startup.defaultReady()
+        document.getElementById('render').disabled = false
+      },
+    },
+  }
 </script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+></script>
 <script>
-function convert() {
-    var input = document.getElementById("input").value.trim();
-    var button = document.getElementById("render");
-    button.disabled = true;
-    output = document.getElementById('output');
-    output.innerHTML = input;
-    MathJax.texReset();
-    MathJax.typesetClear();
+  function convert() {
+    var input = document.getElementById('input').value.trim()
+    var button = document.getElementById('render')
+    button.disabled = true
+    output = document.getElementById('output')
+    output.innerHTML = input
+    MathJax.texReset()
+    MathJax.typesetClear()
     MathJax.typesetPromise()
-    .catch(function (err) {
-        output.innerHTML = '';
-        output.appendChild(document.createElement('pre')).appendChild(document.createTextNode(err.message));
-    })
-    .then(function() {
-        button.disabled = false;
-    });
-}
+      .catch(function (err) {
+        output.innerHTML = ''
+        output
+          .appendChild(document.createElement('pre'))
+          .appendChild(document.createTextNode(err.message))
+      })
+      .then(function () {
+        button.disabled = false
+      })
+  }
 </script>
 <!-- Overlay toggle -->
 <script>
-// Get the videos
-var video1 = document.getElementById("myVideo1");
-var video2 = document.getElementById("myVideo2");
-var video3 = document.getElementById("myVideo3");
+  // Get the videos
+  var video1 = document.getElementById("myVideo1");
+  var video2 = document.getElementById("myVideo2");
+  var video3 = document.getElementById("myVideo3");
 
-// Get the modal
-var modal = document.getElementById("myModal");
+  // Get the modal
+  var modal = document.getElementById("myModal");
 
-// Get the button that opens the modal
-if ( {{ player.belief_subpage }} == 1) {
-    var btn = document.getElementById("myBtn1");
-} else if ( {{ player.belief_subpage }} == 2) {
-    var btn = document.getElementById("myBtn2");
-}
-
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
-
-// When the user clicks the button, open the modal
-btn.onclick = function() {
-  modal.style.display = "block";
-}
-
-// When the user clicks on <span> (x), close the modal and stop all videos
-span.onclick = function() {
-  let simple_instruction= js_vars.simple_instruction;
-  if (simple_instruction === false) {
-      video1.pause();
-      video2.pause();
-      video3.pause();
+  // Get the button that opens the modal
+  if ( {{ player.belief_subpage }} == 1) {
+      var btn = document.getElementById("myBtn1");
+  } else if ( {{ player.belief_subpage }} == 2) {
+      var btn = document.getElementById("myBtn2");
   }
-  modal.style.display = "none";
-}
 
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the user clicks the button, open the modal
+  btn.onclick = function() {
+    modal.style.display = "flex";
+    document.querySelector('body').classList.add('preventScroll')
   }
-}
+
+  // When the user clicks on <span> (x), close the modal and stop all videos
+  span.onclick = function() {
+    let simple_instruction= js_vars.simple_instruction;
+    if (simple_instruction === false) {
+        video1.pause();
+        video2.pause();
+        video3.pause();
+    }
+    //Transition the modal to -300px (up)
+    modal.querySelector('.modal-content').classList.add('hide')
+    setTimeout(() => {
+        /*After 500ms(the transition time) hide the element*/
+        modal.style.display = "none";
+        /*Remove the transition class(otherwise, the element would remain at -300px)-*/
+        modal.querySelector('.modal-content').classList.remove('hide')
+        //Allow Body Scrolling again
+        document.querySelector('body').classList.remove('preventScroll')
+    }, 500);
+  }
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target == modal) {
+        let simple_instruction= js_vars.simple_instruction;
+    if (simple_instruction === false) {
+        video1.pause();
+        video2.pause();
+        video3.pause();
+    }
+    //Transition the modal to -300px (up)
+    modal.querySelector('.modal-content').classList.add('hide')
+    setTimeout(() => {
+        /*After 500ms(the transition time) hide the element*/
+        modal.style.display = "none";
+        /*Remove the transition class(otherwise, the element would remain at -300px)-*/
+        modal.querySelector('.modal-content').classList.remove('hide')
+        //Allow Body Scrolling again
+        document.querySelector('body').classList.remove('preventScroll')
+    }, 500);
+    }
+  }
 </script>
 <!-- Load video controls -->
 <script>
-window.onload = function() {
+  window.onload = function () {
+    const rangeInputs = document.querySelectorAll(
+      '.all-video-container input[type="range"]'
+    )
+
+    function handleInputChange(target) {
+      let min, max, val
+      min = target.min != '' ? target.min : 0
+      max = target.max != '' ? target.max : 100
+      val = target.value
+      target.style.backgroundSize = ((val - min) * 100) / (max - min) + '% 100%'
+    }
+
+    rangeInputs.forEach((input) => {
+      input.addEventListener('input', (e) => handleInputChange(e.target))
+    })
+
     // Video
-    var video1 = document.getElementById("myVideo1");
-    var video2 = document.getElementById("myVideo2");
-    var video3 = document.getElementById("myVideo3");
+    var video1 = document.getElementById('myVideo1')
+    var video2 = document.getElementById('myVideo2')
+    var video3 = document.getElementById('myVideo3')
 
     // Buttons
-    var playButton1 = document.getElementById("play-pause1");
-    var playButton2 = document.getElementById("play-pause2");
-    var playButton3 = document.getElementById("play-pause3");
-    var muteButton1 = document.getElementById("mute1");
-    var muteButton2 = document.getElementById("mute2");
-    var muteButton3 = document.getElementById("mute3");
+    var playButton1 = document.getElementById('play-pause1')
+    var playButton2 = document.getElementById('play-pause2')
+    var playButton3 = document.getElementById('play-pause3')
+    var muteButton1 = document.getElementById('audio-btn1')
+    var muteButton2 = document.getElementById('audio-btn2')
+    var muteButton3 = document.getElementById('audio-btn3')
 
     // Sliders
-    var seekBar1 = document.getElementById("seek-bar1");
-    var seekBar2 = document.getElementById("seek-bar2");
-    var seekBar3 = document.getElementById("seek-bar3");
-    var volumeBar1 = document.getElementById("volume-bar1");
-    var volumeBar2 = document.getElementById("volume-bar2");
-    var volumeBar3 = document.getElementById("volume-bar3");
+    var seekBar1 = document.getElementById('seek-bar1')
+    var seekBar2 = document.getElementById('seek-bar2')
+    var seekBar3 = document.getElementById('seek-bar3')
+    var volumeBar1 = document.getElementById('volume-bar1')
+    var volumeBar2 = document.getElementById('volume-bar2')
+    var volumeBar3 = document.getElementById('volume-bar3')
+
+    //Default Audio Value
+    var audioVal1 = volumeBar1.value
+    var audioVal2 = volumeBar2.value
+    var audioVal3 = volumeBar3.value
 
     // Event listener for the play/pause button
     // Video 1
-    playButton1.addEventListener("click", function() {
-        if (video1.paused == true) {
-            // Play the video and pause all others
-            video1.play();
-            video2.pause();
-            video3.pause();
+    playButton1.addEventListener('click', function () {
+      if (video1.paused == true) {
+        // Play the video and pause all others
+        video1.play()
+        video2.pause()
+        video3.pause()
 
-            // Update the button text to 'Pause' and all others to 'Play'
-            playButton1.innerHTML = "Pause";
-            playButton2.innerHTML = "Play";
-            playButton3.innerHTML = "Play";
-        } else {
-            // Pause the video
-            video1.pause();
+        // Update the button text to 'Pause'
+        playButton1.classList.add('playing')
+        playButton2.classList.remove('playing')
+        playButton3.classList.remove('playing')
+      } else {
+        // Pause the video
+        video1.pause()
 
-            // Update the button text to 'Play'
-            playButton1.innerHTML = "Play";
-        }
-    });
+        // Update the button text to 'Play'
+        playButton1.classList.remove('playing')
+      }
+    })
     // Video 2
-    playButton2.addEventListener("click", function() {
-        if (video2.paused == true) {
-            // Play the video and pause all others
-            video1.pause();
-            video2.play();
-            video3.pause();
+    playButton2.addEventListener('click', function () {
+      if (video2.paused == true) {
+        // Play the video and pause all others
+        video1.pause()
+        video2.play()
+        video3.pause()
 
-            // Update the button text to 'Pause' and all others to 'Play'
-            playButton1.innerHTML = "Play";
-            playButton2.innerHTML = "Pause";
-            playButton3.innerHTML = "Play";
-        } else {
-            // Pause the video
-            video2.pause();
+        // Update the button text to 'Pause' and all others to 'Play'
+        playButton1.classList.remove('playing')
+        playButton2.classList.add('playing')
+        playButton3.classList.remove('playing')
+      } else {
+        // Pause the video
+        video2.pause()
 
-            // Update the button text to 'Play'
-            playButton2.innerHTML = "Play";
-        }
-    });
+        // Update the button text to 'Play'
+        playButton2.classList.remove('playing')
+      }
+    })
     // Video 3
-    playButton3.addEventListener("click", function() {
-        if (video3.paused == true) {
-            // Play the video and pause all others
-            video1.pause();
-            video2.pause();
-            video3.play();
+    playButton3.addEventListener('click', function () {
+      if (video3.paused == true) {
+        // Play the video and pause all others
+        video1.pause()
+        video2.pause()
+        video3.play()
 
-            // Update the button text to 'Pause' and all others to 'Play'
-            playButton1.innerHTML = "Play";
-            playButton2.innerHTML = "Play";
-            playButton3.innerHTML = "Pause";
-        } else {
-            // Pause the video
-            video3.pause();
+        // Update the button text to 'Pause' and all others to 'Play'
+        playButton1.classList.remove('playing')
+        playButton2.classList.remove('playing')
+        playButton3.classList.add('playing')
+      } else {
+        // Pause the video
+        video3.pause()
 
-            // Update the button text to 'Play'
-            playButton3.innerHTML = "Play";
-        }
-    });
+        // Update the button text to 'Play'
+        playButton3.classList.remove('playing')
+      }
+    })
 
     // Event listener for the mute button
     // Video 1
-    muteButton1.addEventListener("click", function() {
-        if (video1.muted == false) {
-            // Mute the video
-            video1.muted = true;
+    muteButton1.addEventListener('click', function () {
+      if (video1.muted == false) {
+        // Mute the video
+        video1.muted = true
 
-            // Update the button text
-            muteButton1.innerHTML = "Unmute";
-        } else {
-            // Unmute the video
-            video1.muted = false;
+        //Save the volume bar value
+        audioVal1 = volumeBar2.value
 
-            // Update the button text
-            muteButton1.innerHTML = "Mute";
+        //Set the volume bar value to 0
+        volumeBar1.value = 0
+        handleInputChange(volumeBar1)
+
+        // Update the button text
+        muteButton1.classList.add('muted')
+      } else {
+        // Unmute the video
+        video1.muted = false
+
+        //Reset the volume bar to previous value
+        if (audioVal1 === '0') {
+          audioVal1 = 1
         }
-    });
+
+        volumeBar1.value = audioVal1
+        video1.volume = volumeBar1.value
+
+        handleInputChange(volumeBar1)
+
+        // Update the button text
+        muteButton1.classList.remove('muted')
+      }
+    })
     // Video 2
-    muteButton2.addEventListener("click", function() {
-        if (video2.muted == false) {
-            // Mute the video
-            video2.muted = true;
+    muteButton2.addEventListener('click', function () {
+      if (video2.muted == false) {
+        // Mute the video
+        video2.muted = true
 
-            // Update the button text
-            muteButton2.innerHTML = "Unmute";
-        } else {
-            // Unmute the video
-            video2.muted = false;
+        //Save the volume bar value
+        audioVal2 = volumeBar2.value
 
-            // Update the button text
-            muteButton2.innerHTML = "Mute";
+        //Set the volume bar value to 0
+        volumeBar2.value = 0
+        handleInputChange(volumeBar2)
+
+        // Update the button text
+        muteButton2.classList.add('muted')
+      } else {
+        // Unmute the video
+        video2.muted = false
+
+        //Reset the volume bar to previous value
+        if (audioVal2 === '0') {
+          audioVal2 = 1
         }
-    });
+
+        volumeBar2.value = audioVal2
+        video2.volume = volumeBar2.value
+
+        handleInputChange(volumeBar2)
+
+        // Update the button text
+        muteButton2.classList.remove('muted')
+      }
+    })
     // Video 3
-    muteButton3.addEventListener("click", function() {
-        if (video3.muted == false) {
-            // Mute the video
-            video3.muted = true;
+    muteButton3.addEventListener('click', function () {
+      if (video3.muted == false) {
+        // Mute the video
+        video3.muted = true
 
-            // Update the button text
-            muteButton3.innerHTML = "Unmute";
-        } else {
-            // Unmute the video
-            video3.muted = false;
+        //Save the volume bar value
+        audioVal3 = volumeBar3.value
 
-            // Update the button text
-            muteButton3.innerHTML = "Mute";
+        //Set the volume bar value to 0
+        volumeBar3.value = 0
+        handleInputChange(volumeBar3)
+
+        // Update the button text
+        muteButton3.classList.add('muted')
+      } else {
+        // Unmute the video
+        video3.muted = false
+
+        //Reset the volume bar to previous value
+        if (audioVal3 === '0') {
+          audioVal3 = 1
         }
-    });
+
+        volumeBar3.value = audioVal3
+        video3.volume = volumeBar3.value
+
+        handleInputChange(volumeBar3)
+
+        // Update the button text
+        muteButton3.classList.remove('muted')
+      }
+    })
+
+    //Pausing video when the user clicks on the video
+    video1.addEventListener('click', function () {
+      if (video1.paused == true) {
+        // Play the video and pause all others
+        video1.play()
+        video2.pause()
+        video3.pause()
+
+        // Update the button text to 'Pause'
+        playButton1.classList.add('playing')
+        playButton2.classList.remove('playing')
+        playButton3.classList.remove('playing')
+      } else {
+        // Pause the video
+        video1.pause()
+
+        // Update the button text to 'Play'
+        playButton1.classList.remove('playing')
+      }
+    })
+
+    video2.addEventListener('click', function () {
+      if (video2.paused == true) {
+        // Play the video and pause all others
+        video2.play()
+        video1.pause()
+        video3.pause()
+
+        // Update the button text to 'Pause'
+        playButton2.classList.add('playing')
+        playButton1.classList.remove('playing')
+        playButton3.classList.remove('playing')
+      } else {
+        // Pause the video
+        video2.pause()
+
+        // Update the button text to 'Play'
+        playButton2.classList.remove('playing')
+      }
+    })
+
+    video3.addEventListener('click', function () {
+      if (video3.paused == true) {
+        // Play the video and pause all others
+        video3.play()
+        video1.pause()
+        video2.pause()
+
+        // Update the button text to 'Pause'
+        playButton3.classList.add('playing')
+        playButton2.classList.remove('playing')
+        playButton1.classList.remove('playing')
+      } else {
+        // Pause the video
+        video3.pause()
+
+        // Update the button text to 'Play'
+        playButton3.classList.remove('playing')
+      }
+    })
+
+    //Utility function to handle fast forward/backwards for player
+
+    const fastForwardOrBackwards = (e, video) => {
+      if (e.clientX < innerWidth / 2) {
+        video.currentTime -= 5
+        video.parentElement.classList.add('backwards')
+        setTimeout(() => {
+          video.parentElement.classList.remove('backwards')
+        }, 500)
+      } else if (e.clientX > innerWidth / 2) {
+        video.currentTime += 5
+        video.parentElement.classList.add('forwards')
+        setTimeout(() => {
+          video.parentElement.classList.remove('forwards')
+        }, 500)
+      }
+    }
+
+    //Forwards/Backwards with double clicks
+    video1.addEventListener('dblclick', (e) =>
+      fastForwardOrBackwards(e, video1)
+    )
+
+    video2.addEventListener('dblclick', (e) =>
+      fastForwardOrBackwards(e, video2)
+    )
+
+    video3.addEventListener('dblclick', (e) =>
+      fastForwardOrBackwards(e, video3)
+    )
+
+    //Utlity function to update video bar when the user moves the slider
+    const changeSeekBarValue = function (video, videoSeekBar) {
+      // Calculate the new time
+      var time = video.duration * (videoSeekBar.value / 100)
+      // Update the video time
+      video.currentTime = time
+      console.log(video.currentTime)
+    }
 
     // Event listener for the seek bar
     // Video 1
-    seekBar1.addEventListener("change", function() {
-        // Calculate the new time
-        var time1 = video1.duration * (seekBar1.value / 100);
-
-        // Update the video time
-        video1.currentTime = time1;
-    });
+    seekBar1.addEventListener('change', () => {
+      changeSeekBarValue(video1, seekBar1)
+    })
     // Video 2
-    seekBar2.addEventListener("change", function() {
-        // Calculate the new time
-        var time2 = video2.duration * (seekBar2.value / 100);
-
-        // Update the video time
-        video2.currentTime = time2;
-    });
+    seekBar2.addEventListener('change', () => {
+      changeSeekBarValue(video2, seekBar2)
+    })
     // Video 3
-    seekBar3.addEventListener("change", function() {
-        // Calculate the new time
-        var time3 = video3.duration * (seekBar3.value / 100);
+    seekBar3.addEventListener('change', () => {
+      changeSeekBarValue(video3, seekBar3)
+    })
 
-        // Update the video time
-        video3.currentTime = time3;
-    });
+    //Utlity function to update video bar as the video plays
+    const updateSeekBar = function (video, videoSeekBar) {
+      // Calculate the slider value
+      var value = (100 / video.duration) * video.currentTime
+
+      // Update the slider value
+      videoSeekBar.value = value
+      handleInputChange(videoSeekBar)
+    }
 
     // Update the seek bar as the video plays
     // Video 1
-    video1.addEventListener("timeupdate", function() {
-        // Calculate the slider value
-        var value1 = (100 / video1.duration) * video1.currentTime;
-
-        // Update the slider value
-        seekBar1.value = value1;
-    });
+    video1.addEventListener('timeupdate', () => updateSeekBar(video1, seekBar1))
     // Video 2
-    video2.addEventListener("timeupdate", function() {
-        // Calculate the slider value
-        var value2 = (100 / video2.duration) * video2.currentTime;
-
-        // Update the slider value
-        seekBar2.value = value2;
-    });
+    video2.addEventListener('timeupdate', () => updateSeekBar(video2, seekBar2))
     // Video 3
-    video3.addEventListener("timeupdate", function() {
-        // Calculate the slider value
-        var value3 = (100 / video3.duration) * video3.currentTime;
-
-        // Update the slider value
-        seekBar3.value = value3;
-    });
+    video3.addEventListener('timeupdate', () => updateSeekBar(video3, seekBar3))
 
     // Pause the video when the slider handle is being dragged
     // Video 1
-    seekBar1.addEventListener("mousedown", function() {
-        video1.pause();
-        playButton1.innerHTML = "Play";
-        video2.pause();
-        playButton2.innerHTML = "Play";
-        video3.pause();
-        playButton2.innerHTML = "Play";
-    });
+    seekBar1.addEventListener('mousedown', function () {
+      video1.pause()
+      playButton1.classList.remove('playing')
+      changeSeekBarValue(video1, seekBar1)
+      video2.pause()
+      playButton2.classList.remove('playing')
+      video3.pause()
+      playButton3.classList.remove('playing')
+    })
     // Video 2
-    seekBar2.addEventListener("mousedown", function() {
-        video1.pause();
-        playButton1.innerHTML = "Play";
-        video2.pause();
-        playButton2.innerHTML = "Play";
-        video3.pause();
-        playButton2.innerHTML = "Play";
-    });
+    seekBar2.addEventListener('mousedown', function () {
+      video1.pause()
+      playButton1.classList.remove('playing')
+      video2.pause()
+      playButton2.classList.remove('playing')
+      video3.pause()
+      playButton3.classList.remove('playing')
+    })
     // Video 3
-    seekBar3.addEventListener("mousedown", function() {
-        video1.pause();
-        playButton1.innerHTML = "Play";
-        video2.pause();
-        playButton2.innerHTML = "Play";
-        video3.pause();
-        playButton2.innerHTML = "Play";
-    });
+    seekBar3.addEventListener('mousedown', function () {
+      video1.pause()
+      playButton1.classList.remove('playing')
+      video2.pause()
+      playButton2.classList.remove('playing')
+      video3.pause()
+      playButton3.classList.remove('playing')
+    })
 
     // Play the video when the slider handle is dropped
     // Video 1
-    seekBar1.addEventListener("mouseup", function() {
-        video1.play();
-        playButton1.innerHTML = "Pause";
-    });
+    seekBar1.addEventListener('mouseup', function () {
+      video1.play()
+      playButton1.classList.add('playing')
+    })
     // Video 2
-    seekBar2.addEventListener("mouseup", function() {
-        video2.play();
-        playButton2.innerHTML = "Pause";
-    });
+    seekBar2.addEventListener('mouseup', function () {
+      video2.play()
+      playButton2.classList.add('playing')
+    })
     // Video 3
-    seekBar3.addEventListener("mouseup", function() {
-        video3.play();
-        playButton3.innerHTML = "Pause";
-    });
+    seekBar3.addEventListener('mouseup', function () {
+      video3.play()
+      playButton3.classList.add('playing')
+    })
 
     // Event listener for the volume bar
-    // Video 1
-    volumeBar1.addEventListener("change", function() {
-        // Update the video volume
-        video1.volume = volumeBar1.value;
-    });
-    // Video 2
-    volumeBar2.addEventListener("change", function() {
-        // Update the video volume
-        video2.volume = volumeBar2.value;
-    });
-    // Video 3
-    volumeBar3.addEventListener("change", function() {
-        // Update the video volume
-        video3.volume = volumeBar3.value;
-    });
-}
+    volumeBar1.addEventListener('change', function () {
+      // Update the video volume
+      video1.muted = false
+      video1.volume = volumeBar1.value
+      audioVal1 = volumeBar1.value
+      if (audioVal1 === '0') {
+        muteButton1.classList.add('muted')
+      } else {
+        muteButton1.classList.remove('muted')
+      }
+    })
+    // Event listener for the volume bar
+    volumeBar2.addEventListener('change', function () {
+      // Update the video volume
+      video2.muted = false
+      video2.volume = volumeBar2.value
+      audioVal2 = volumeBar2.value
+      if (audioVal2 === '0') {
+        muteButton2.classList.add('muted')
+      } else {
+        muteButton2.classList.remove('muted')
+      }
+    })
+    // Event listener for the volume bar
+    volumeBar3.addEventListener('change', function () {
+      // Update the video volume
+      video3.muted = false
+      video3.volume = volumeBar3.value
+      audioVal3 = volumeBar3.value
+      if (audioVal3 === '0') {
+        muteButton3.classList.add('muted')
+      } else {
+        muteButton3.classList.remove('muted')
+      }
+    })
+  }
 </script>
-{{ endblock }}
-
-{{ block styles }}
-{% if player.belief_subpage == 1 %}
-<link href="{{ static 'belief-slider-1.css' }}" rel="stylesheet">
+{{ endblock }} {{ block styles }} {% if player.belief_subpage == 1 %}
+<link href="{{ static 'belief-slider-1.css' }}" rel="stylesheet" />
 {% elif player.belief_subpage == 2 %}
-<link href="{{ static 'belief-slider-2.css' }}" rel="stylesheet">
+<link href="{{ static 'belief-slider-2.css' }}" rel="stylesheet" />
 {% endif %}
 <style>
-    .tab {
-        display: none;
-        text-align: justify;
-    }
-    .otree-title {
-        text-align: center;
-    }
-    .otree-body{
-        font-size: 103%;
-    }
-    .otree-timer {
-        display: none;
-    }
+  .tab {
+    display: none;
+    text-align: justify;
+  }
+  .otree-title {
+    text-align: center;
+  }
+  .otree-body {
+    font-size: 103%;
+  }
+  .otree-timer {
+    display: none;
+  }
 </style>
 <style>
-    #active1 {
-        display: none;
-    }
-    #inactive1 {
-        display: block;
-    }
+  #active1 {
+    display: none;
+  }
+  #inactive1 {
+    display: block;
+  }
 </style>
 <style>
-    #instruction2 {
-        display: block;
-    }
-    #certain2 {
-        display: none;
-    }
-    #uncertain2 {
-        display: none;
-    }
-    #active2 {
-        display: none;
-    }
-    #inactive2 {
-        display: block;
-    }
+  #instruction2 {
+    display: block;
+  }
+  #certain2 {
+    display: none;
+  }
+  #uncertain2 {
+    display: none;
+  }
+  #active2 {
+    display: none;
+  }
+  #inactive2 {
+    display: block;
+  }
 </style>
 <style>
-.urn{
-background: linear-gradient(44deg, #a4f2ff, #c8f7ff);
-width: 262px;
-height: 304px;
-border: 6px solid rgb(56, 56, 56);
-border-bottom-left-radius: 15%;
-border-bottom-right-radius: 15%;
-margin: auto;
-border-top: none;
-position: relative;
-box-shadow: 11px 11px 12px 2px rgb(0 0 0 / 5%);
-}
-.urn-10{
-    width:130px;
-    height:260px;
-}
-.ball{
-position: absolute;
-width: 20px;
-height: 20px;
-border-radius: 50%;
-border: 1px solid #7e7e7e;
-box-shadow:inset 3px -4px 8px rgba(255, 255, 255, 0.384), inset -3px 1px 4px rgba(0, 0, 0, 0.404), 0 0 1px #0000003b ;
-transition: border 0.5s ease;
-}
+  .urn {
+    background: linear-gradient(44deg, #a4f2ff, #c8f7ff);
+    width: 262px;
+    height: 304px;
+    border: 6px solid rgb(56, 56, 56);
+    border-bottom-left-radius: 15%;
+    border-bottom-right-radius: 15%;
+    margin: auto;
+    border-top: none;
+    position: relative;
+    box-shadow: 11px 11px 12px 2px rgb(0 0 0 / 5%);
+  }
+  .urn-10 {
+    width: 130px;
+    height: 260px;
+  }
+  .ball {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #7e7e7e;
+    box-shadow: inset 3px -4px 8px rgba(255, 255, 255, 0.384),
+      inset -3px 1px 4px rgba(0, 0, 0, 0.404), 0 0 1px #0000003b;
+    transition: border 0.5s ease;
+  }
 
-.urn-10 .ball{
+  .urn-10 .ball {
     width: 45px;
     height: 45px;
-}
+  }
 
-.ball:nth-child(4n){
-z-index: 100;
-}
+  .ball:nth-child(4n) {
+    z-index: 100;
+  }
 
-.ball:nth-child(2n){
-z-index: 50;
-}
+  .ball:nth-child(2n) {
+    z-index: 50;
+  }
 
+  .ball.highlighted {
+    border: 3px solid yellow;
+    z-index: 100;
+  }
 
-.ball.highlighted{
-border: 3px solid yellow;
-z-index: 100;
-}
+  .ball.highlightedAll {
+    border: 2px solid yellow;
+  }
 
-.ball.highlightedAll{
-border: 2px solid yellow;
-}
+  .ball.uncolored {
+    border-color: #7e7e7e;
+  }
 
-.ball.uncolored{
-border-color: #7e7e7e;
-}
-
-.ball.uncolored:before{
+  .ball.uncolored:before {
     content: '?';
-    width:100%;
-    height:100%;
-    font-size:13px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
+    width: 100%;
+    height: 100%;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-.left-column{
-position: relative;
-left: -260px;
-height: 100%;
-bottom: 0;
-text-align: right;
-}
+  .left-column {
+    position: relative;
+    left: -260px;
+    height: 100%;
+    bottom: 0;
+    text-align: right;
+  }
 
-.urn-10 .left-column{
-    left:-140px;
-}
+  .urn-10 .left-column {
+    left: -140px;
+  }
 
-.color-row{
-position: absolute;
-width: 100%;
-transition: all 0.5s ease;
-}
+  .color-row {
+    position: absolute;
+    width: 100%;
+    transition: all 0.5s ease;
+  }
 
-.color-row.highlighted,
-.color-row.highlightedAll{
+  .color-row.highlighted,
+  .color-row.highlightedAll {
     color: rgb(242 215 36);
     transform: translateX(-15px) scale(1.1);
-}
+  }
 </style>
 <style>
-a:link {
-  color: black;
-  background-color: transparent;
-  text-decoration: underline;
-}
+  a:link {
+    color: black;
+    background-color: transparent;
+    text-decoration: underline;
+  }
 
-a:visited {
-  color: black;
-  background-color: transparent;
-  text-decoration: underline;
-}
+  a:visited {
+    color: black;
+    background-color: transparent;
+    text-decoration: underline;
+  }
 
-a:hover {
-  color: black;
-  background-color: transparent;
-  text-decoration: underline;
-}
+  a:hover {
+    color: black;
+    background-color: transparent;
+    text-decoration: underline;
+  }
 
-a:active {
-  color: black;
-  background-color: transparent;
-  text-decoration: underline;
-}
+  a:active {
+    color: black;
+    background-color: transparent;
+    text-decoration: underline;
+  }
 </style>
 <style>
-.slider::-webkit-slider-thumb{
+  .slider::-webkit-slider-thumb {
     transition: opacity 0.5s ease;
-}
+  }
 
-.slider-thumb-hidden::-webkit-slider-thumb{
+  .slider-thumb-hidden::-webkit-slider-thumb {
     opacity: 0;
-}
+  }
 </style>
 <!-- Overlay instructions -->
 <style>
-/* The Modal (background) */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  left: 0;
-  top: 0;
-  width: 75%; /* Full width */
-  height: 75%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
+  /* The Modal (background) */
+  .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 75%; /* Full width */
+    height: 75%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+  }
 
-/* Modal Content */
-.modal-content {
-  position: relative;
-  background-color: White;
-  margin: auto;
-  padding: 0;
-  border: 1px solid #888;
-  width: 80%;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-  -webkit-animation-name: animatetop;
-  -webkit-animation-duration: 0.4s;
-  animation-name: animatetop;
-  animation-duration: 0.4s
-}
+  /*Class to prevent body from scrolling while the modal is open*/
+  body.preventScroll {
+    overflow: hidden;
+  }
 
-/* Add Animation */
-@-webkit-keyframes animatetop {
-  from {top:-300px; opacity:0}
-  to {top:0; opacity:1}
-}
+  /* Modal Content */
+  .modal-content {
+    position: relative;
+    background-color: White;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888 !important;
+    width: 80% !important;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+    transition: 0.5s ease;
+  }
 
-@keyframes animatetop {
-  from {top:-300px; opacity:0}
-  to {top:0; opacity:1}
-}
+  /*Class to add transition to closing modal*/
+  .modal-content.hide {
+    transform: translateY(-300px);
+    opacity: 0;
+  }
 
-/* The Close Button */
-.close {
-  color: white;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
+  /* Add Animation */
+  @-webkit-keyframes animatetop {
+    from {
+      top: -300px;
+      opacity: 0;
+    }
+    to {
+      top: 0;
+      opacity: 1;
+    }
+  }
 
-.close:hover,
-.close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-}
+  @keyframes animatetop {
+    from {
+      top: -300px;
+      opacity: 0;
+    }
+    to {
+      top: 0;
+      opacity: 1;
+    }
+  }
 
-.modal-dialog{
-  overflow-y: initial;
-}
+  /* The Close Button */
+  .close {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
 
-.modal-header {
-  padding: 0px 0px;
-  background-color: lightgray;
-  color: white;
-}
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
 
-.modal-body {
-  padding: 2px 16px;
-  height: 80vh;
-  overflow-y: auto;
-}
+  .modal-dialog {
+    overflow-y: initial;
+  }
 
-.modal-footer {
-  padding: 2px 16px;
-  background-color: lightgray;
-  color: white;
-}
+  .modal-header {
+    padding: 0px 0px;
+    background-color: #f2f2f259;
+    color: white;
+  }
+
+  .modal-body {
+    height: 80vh;
+    overflow-y: auto;
+    padding: 1rem 3rem !important;
+  }
+
+  .modal-footer {
+    padding: 2px 16px;
+    background-color: #f2f2f259;
+    color: white;
+  }
 </style>
 <!-- Hide video controls-->
 <style>
-video {
-  pointer-events: none;
-}
+  /*Video UI Styles*/
+  .video-ui-container {
+    width: 800px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #333;
+    padding: 15px 10px;
+    margin-top: -5px;
+  }
+  #play-pause1,
+  #play-pause2,
+  #play-pause3,
+  #audio-btn1,
+  #audio-btn2,
+  #audio-btn3 {
+    border: 0;
+    background: transparent;
+    box-sizing: border-box;
+    width: 30px;
+    height: 30px;
+    border-color: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .audio-container {
+    position: relative;
+  }
+  .audio-container .audio-slider-container {
+    position: absolute;
+    transform: rotate(270deg);
+    top: -86px;
+    left: -57px;
+    background: #333333ad;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 5px;
+    opacity: 0;
+    display: none;
+  }
+
+  .audio-container:hover .audio-slider-container {
+    display: flex;
+    opacity: 1;
+  }
+
+  #play-pause1 img,
+  #play-pause2 img,
+  #play-pause3 img,
+  #audio-btn1 img,
+  #audio-btn2 img,
+  #audio-btn3 img {
+    width: 100%;
+    transition: 0.5s ease;
+  }
+
+  #play-pause1 img.pause,
+  #play-pause2 img.pause,
+  #play-pause3 img.pause,
+  #audio-btn1 img.mute-sound,
+  #audio-btn2 img.mute-sound,
+  #audio-btn3 img.mute-sound {
+    display: none;
+  }
+
+  #play-pause1.playing img.play,
+  #play-pause2.playing img.play,
+  #play-pause3.playing img.play,
+  #audio-btn1.muted img.play-sound,
+  #audio-btn2.muted img.play-sound,
+  #audio-btn3.muted img.play-sound {
+    display: none;
+  }
+  #play-pause1.playing img.pause,
+  #play-pause2.playing img.pause,
+  #play-pause3.playing img.pause,
+  #audio-btn1.muted img.mute-sound,
+  #audio-btn2.muted img.mute-sound,
+  #audio-btn3.muted img.mute-sound {
+    display: block;
+  }
+
+  #play-pause1:hover img,
+  #play-pause2:hover img,
+  #play-pause3:hover img {
+    opacity: 0.7;
+  }
+
+  #seek-bar1,
+  #seek-bar2,
+  #seek-bar3 {
+    width: 100%;
+    margin-left: 10px;
+  }
+
+  #myVideo1,
+  #myVideo2,
+  #myVideo3 {
+    height: auto;
+  }
+  .video-and-ui-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .video-container {
+    position: relative;
+  }
+
+  .video-container .backwards-container,
+  .video-container .forwards-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .video-container .backwards-container img,
+  .video-container .forwards-container img {
+    opacity: 0.7;
+    width: 50%;
+  }
+
+  .video-container .backwards-container {
+    height: 100%;
+    width: 50%;
+    position: absolute;
+    background: url('../_static/global/video-ui-assets/bf.png');
+    left: 0;
+    border-top-left-radius: 100%;
+    border-bottom-left-radius: 100%;
+    background: linear-gradient(90deg, #00000025, transparent);
+    transition: 0.5s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .video-container .forwards-container {
+    height: 100%;
+    width: 50%;
+    position: absolute;
+    background: url('../_static/global/video-ui-assets/ff.png');
+    right: 0;
+    border-top-right-radius: 100%;
+    border-bottom-right-radius: 100%;
+    background: linear-gradient(270deg, #00000025, transparent);
+    transition: 0.5s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .video-container.backwards .backwards-container,
+  .video-container.forwards .forwards-container {
+    opacity: 1;
+  }
+
+  #video-controls input[type='range'] {
+    -webkit-appearance: none;
+    margin-right: 15px;
+    height: 10px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 5px;
+    background-image: linear-gradient(#ff4500, #ff4500);
+    background-size: 0% 100%;
+    background-repeat: no-repeat;
+  }
+
+  #video-controls input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #ff4500;
+    cursor: ew-resize;
+    box-shadow: 0 0 2px 0 #555;
+    transition: background 0.3s ease-in-out;
+  }
+
+  #video-controls input[type='range']::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+  }
+
+  #video-controls #volume-bar1,
+  #video-controls #volume-bar2,
+  #video-controls #volume-bar3 {
+    margin: 0 !important;
+    background-size: 100% 100%;
+  }
+
+  .all-video-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 25px 0;
+  }
 </style>
-{{ endblock }}
-
-{{ block content }}
-
-{% if player.belief_subpage == 1 %}
+{{ endblock }} {{ block content }} {% if player.belief_subpage == 1 %}
 
 <p>
-    {% if treatambiguity %}
-    In this round, the urn consists of <b>{{ session.config.numballs }} balls of up to {% if prior == 50 %}2{% else %}5{% endif %} different colors</b>.
-    <br>
-    Specifically, there may be some balls that are {% if prior == 50 %}{{ slicecolor1 }}, and some that are {{ slicecolor2 }}{% else %}{{ slicecolor1 }}, {{ slicecolor2 }}, {{ slicecolor3 }}, {{ slicecolor4 }}, and {{ slicecolor5 }}{% endif %} in color.
-    <br>
-    There are no other colors apart from these {% if prior == 50 %}two{% else %}five{% endif %}.
-    <br>
-    You do <b>not</b> know the exact composition of the urn.
-    {% elif treatrisk %}
-    In this round, the urn consists of <b>{{ session.config.numballs }} balls</b>, with composition as shown in the figure below.
-<!--    <br>-->
-<!--    Specifically, there are {% if prior == 50 %}<b>{{ numcolor1 }}</b> {{ slicecolor1 }} and <b>{{ numcolor2 }}</b> {{ slicecolor2 }} balls{% else %}<b>{{ numcolor1 }}</b> {{ slicecolor1 }} balls, <b>{{ numcolor2 }}</b> {{ slicecolor2 }} balls, <b>{{ numcolor3 }}</b> {{ slicecolor3 }} balls, <b>{{ numcolor4 }}</b> {{ slicecolor4 }} balls, and <b>{{ numcolor5 }}</b> {{ slicecolor5 }} balls{% endif %}.-->
-    {% endif %}
-    <br><br>
+  {% if treatambiguity %} In this round, the urn consists of
+  <b
+    >{{ session.config.numballs }} balls of up to {% if prior == 50 %}2{% else
+    %}5{% endif %} different colors</b
+  >.
+  <br />
+  Specifically, there may be some balls that are {% if prior == 50 %}{{
+  slicecolor1 }}, and some that are {{ slicecolor2 }}{% else %}{{ slicecolor1
+  }}, {{ slicecolor2 }}, {{ slicecolor3 }}, {{ slicecolor4 }}, and {{
+  slicecolor5 }}{% endif %} in color.
+  <br />
+  There are no other colors apart from these {% if prior == 50 %}two{% else
+  %}five{% endif %}.
+  <br />
+  You do <b>not</b> know the exact composition of the urn. {% elif treatrisk %}
+  In this round, the urn consists of <b>{{ session.config.numballs }} balls</b>,
+  with composition as shown in the figure below.
+  <!--    <br>-->
+  <!--    Specifically, there are {% if prior == 50 %}<b>{{ numcolor1 }}</b> {{ slicecolor1 }} and <b>{{ numcolor2 }}</b> {{ slicecolor2 }} balls{% else %}<b>{{ numcolor1 }}</b> {{ slicecolor1 }} balls, <b>{{ numcolor2 }}</b> {{ slicecolor2 }} balls, <b>{{ numcolor3 }}</b> {{ slicecolor3 }} balls, <b>{{ numcolor4 }}</b> {{ slicecolor4 }} balls, and <b>{{ numcolor5 }}</b> {{ slicecolor5 }} balls{% endif %}.-->
+  {% endif %}
+  <br /><br />
 </p>
 
 <div class="urn">
-    <div class="left-column">
-        <div class="color-row row-1"></div>
-        <div class="color-row row-2"></div>
-        <div class="color-row row-3"></div>
-        <div class="color-row row-4"></div>
-        <div class="color-row row-5"></div>
-        <div class="color-row row-6"></div>
-        <div class="color-row row-7"></div>
-        <div class="color-row row-8"></div>
-        <div class="color-row row-9"></div>
-        <div class="color-row row-10"></div>
-    </div>
+  <div class="left-column">
+    <div class="color-row row-1"></div>
+    <div class="color-row row-2"></div>
+    <div class="color-row row-3"></div>
+    <div class="color-row row-4"></div>
+    <div class="color-row row-5"></div>
+    <div class="color-row row-6"></div>
+    <div class="color-row row-7"></div>
+    <div class="color-row row-8"></div>
+    <div class="color-row row-9"></div>
+    <div class="color-row row-10"></div>
+  </div>
 </div>
 
-<br><br>
+<br /><br />
 
 <p>
-    <u><b><font color="#cc0000">PREDICTED EVENT:</font></b></u> The randomly drawn ball <a href='#' class="predicted-event"><b>is
-    {% if predicttrue %}<b>{{ colorevent }}</b>.{% endif %}
-    {% if predictfalse %}<b>either
-        {% if slicecolor1 != colorevent %}{{ slicecolor1 }}, {% endif %}
-        {% if slicecolor2 != colorevent %}{{ slicecolor2 }}, {% endif %}
-        {% if slicecolor3 != colorevent %}{{ slicecolor3 }}, {% endif %}
-        {% if slicecolor4 != colorevent %}
-            {% if slicecolor5 == colorevent %}or {{ slicecolor4 }}.{% endif %}
-            {% if slicecolor5 != colorevent %}{{ slicecolor4 }}, {% endif %}
-        {% endif %}
-        {% if slicecolor5 != colorevent %}or {{ slicecolor5 }}.{% endif %}</b>
-    {% endif %}</b></a>
-    <br>
-    <br>
-    What is your prediction (out of 100) that a randomly drawn ball is
-    {% if predicttrue %}{{ colorevent }}?{% endif %}
-    {% if predictfalse %}either
-        {% if slicecolor1 != colorevent %}{{ slicecolor1 }}, {% endif %}
-        {% if slicecolor2 != colorevent %}{{ slicecolor2 }}, {% endif %}
-        {% if slicecolor3 != colorevent %}{{ slicecolor3 }}, {% endif %}
-        {% if slicecolor4 != colorevent %}
-            {% if slicecolor5 == colorevent %}or {{ slicecolor4 }}?{% endif %}
-            {% if slicecolor5 != colorevent %}{{ slicecolor4 }}, {% endif %}
-        {% endif %}
-        {% if slicecolor5 != colorevent %}or {{ slicecolor5 }}?{% endif %}
-    {% endif %}
-    <br>
-    <br>
+  <u
+    ><b><font color="#cc0000">PREDICTED EVENT:</font></b></u
+  >
+  The randomly drawn ball
+  <a href="#" class="predicted-event"
+    ><b
+      >is {% if predicttrue %}<b>{{ colorevent }}</b>.{% endif %} {% if
+      predictfalse %}<b
+        >either {% if slicecolor1 != colorevent %}{{ slicecolor1 }}, {% endif %}
+        {% if slicecolor2 != colorevent %}{{ slicecolor2 }}, {% endif %} {% if
+        slicecolor3 != colorevent %}{{ slicecolor3 }}, {% endif %} {% if
+        slicecolor4 != colorevent %} {% if slicecolor5 == colorevent %}or {{
+        slicecolor4 }}.{% endif %} {% if slicecolor5 != colorevent %}{{
+        slicecolor4 }}, {% endif %} {% endif %} {% if slicecolor5 != colorevent
+        %}or {{ slicecolor5 }}.{% endif %}</b
+      >
+      {% endif %}</b
+    ></a
+  >
+  <br />
+  <br />
+  What is your prediction (out of 100) that a randomly drawn ball is {% if
+  predicttrue %}{{ colorevent }}?{% endif %} {% if predictfalse %}either {% if
+  slicecolor1 != colorevent %}{{ slicecolor1 }}, {% endif %} {% if slicecolor2
+  != colorevent %}{{ slicecolor2 }}, {% endif %} {% if slicecolor3 != colorevent
+  %}{{ slicecolor3 }}, {% endif %} {% if slicecolor4 != colorevent %} {% if
+  slicecolor5 == colorevent %}or {{ slicecolor4 }}?{% endif %} {% if slicecolor5
+  != colorevent %}{{ slicecolor4 }}, {% endif %} {% endif %} {% if slicecolor5
+  != colorevent %}or {{ slicecolor5 }}?{% endif %} {% endif %}
+  <br />
+  <br />
 </p>
 
 <div align="center">
-    <label for="demo1" class="float-left" style="width:300px" align="left">
-        <b>
-            You predict a <span id="demo1"></span>% chance that ball is <br>
-            {% if predicttrue %}
-                {% if prior != 50 %}
-                    {% if slicecolor1 != colorevent %}{{ slicecolor1 }}, {% endif %}
-                    {% if slicecolor2 != colorevent %}{{ slicecolor2 }}, {% endif %}
-                    {% if slicecolor3 != colorevent %}{{ slicecolor3 }}, {% endif %}
-                    {% if slicecolor4 != colorevent %}
-                        {% if slicecolor5 == colorevent %}or {{ slicecolor4 }}.{% endif %}
-                        {% if slicecolor5 != colorevent %}{{ slicecolor4 }}, {% endif %}
-                    {% endif %}
-                    {% if slicecolor5 != colorevent %}or {{ slicecolor5 }}.{% endif %}
-                {% elif prior == 50 %}
-                    {% if slicecolor1 != colorevent %}{{ slicecolor1 }}{% elif slicecolor2 != colorevent %}{{ slicecolor2 }}{% endif %}.
-                {% endif %}
-            {% else %}
-            {{ colorevent }}.
-            {% endif %}
-        </b>
-    </label>
-    <label for="demo2" class="float-right" style="width:300px" align="right">
-        <b>
-            You predict a <span id="demo2"></span>% chance that ball is <br>
-            {% if predictfalse %}
-                {% if prior != 50 %}
-                    {% if slicecolor1 != colorevent %}{{ slicecolor1 }}, {% endif %}
-                    {% if slicecolor2 != colorevent %}{{ slicecolor2 }}, {% endif %}
-                    {% if slicecolor3 != colorevent %}{{ slicecolor3 }}, {% endif %}
-                    {% if slicecolor4 != colorevent %}
-                        {% if slicecolor5 == colorevent %}or {{ slicecolor4 }}.{% endif %}
-                        {% if slicecolor5 != colorevent %}{{ slicecolor4 }}, {% endif %}
-                    {% endif %}
-                    {% if slicecolor5 != colorevent %}or {{ slicecolor5 }}.{% endif %}
-                {% elif prior == 50 %}
-                    {% if slicecolor1 != colorevent %}{{ slicecolor1 }}{% elif slicecolor2 != colorevent %}{{ slicecolor2 }}{% endif %}.
-                {% endif %}
-            {% else %}
-            {{ colorevent }}.
-            {% endif %}
-        </b>
-    </label>
+  <label for="demo1" class="float-left" style="width: 300px" align="left">
+    <b>
+      You predict a <span id="demo1"></span>% chance that ball is <br />
+      {% if predicttrue %} {% if prior != 50 %} {% if slicecolor1 != colorevent
+      %}{{ slicecolor1 }}, {% endif %} {% if slicecolor2 != colorevent %}{{
+      slicecolor2 }}, {% endif %} {% if slicecolor3 != colorevent %}{{
+      slicecolor3 }}, {% endif %} {% if slicecolor4 != colorevent %} {% if
+      slicecolor5 == colorevent %}or {{ slicecolor4 }}.{% endif %} {% if
+      slicecolor5 != colorevent %}{{ slicecolor4 }}, {% endif %} {% endif %} {%
+      if slicecolor5 != colorevent %}or {{ slicecolor5 }}.{% endif %} {% elif
+      prior == 50 %} {% if slicecolor1 != colorevent %}{{ slicecolor1 }}{% elif
+      slicecolor2 != colorevent %}{{ slicecolor2 }}{% endif %}. {% endif %} {%
+      else %} {{ colorevent }}. {% endif %}
+    </b>
+  </label>
+  <label for="demo2" class="float-right" style="width: 300px" align="right">
+    <b>
+      You predict a <span id="demo2"></span>% chance that ball is <br />
+      {% if predictfalse %} {% if prior != 50 %} {% if slicecolor1 != colorevent
+      %}{{ slicecolor1 }}, {% endif %} {% if slicecolor2 != colorevent %}{{
+      slicecolor2 }}, {% endif %} {% if slicecolor3 != colorevent %}{{
+      slicecolor3 }}, {% endif %} {% if slicecolor4 != colorevent %} {% if
+      slicecolor5 == colorevent %}or {{ slicecolor4 }}.{% endif %} {% if
+      slicecolor5 != colorevent %}{{ slicecolor4 }}, {% endif %} {% endif %} {%
+      if slicecolor5 != colorevent %}or {{ slicecolor5 }}.{% endif %} {% elif
+      prior == 50 %} {% if slicecolor1 != colorevent %}{{ slicecolor1 }}{% elif
+      slicecolor2 != colorevent %}{{ slicecolor2 }}{% endif %}. {% endif %} {%
+      else %} {{ colorevent }}. {% endif %}
+    </b>
+  </label>
 
-    <div class="slidecontainer">
-        <input type="range" min="0" max="100" step="1" value="-1" class="slider slider-thumb-hidden" id="myRange1" name="belief">
-    </div>
-    <br>
+  <div class="slidecontainer">
+    <input
+      type="range"
+      min="0"
+      max="100"
+      step="1"
+      value="-1"
+      class="slider slider-thumb-hidden"
+      id="myRange1"
+      name="belief"
+    />
+  </div>
+  <br />
 </div>
 
-
 <p style="align: left">
-    <font size="+1"><b>Reminder: {% if bsr %}Your chance of receiving &euro;{{ stakes|to2 }} will depend <i>both</i> on your prediction and which ball is drawn from this urn, according to the <font color="maroon">payment procedure</font>.{% else %}Your payoff will depend <i>both</i> on your prediction and which ball is drawn from this urn, according to the <font color="maroon">payment procedure</font>.{% endif %}</b></font>
-    <br>
-    Click this link to see the instructions again (you will remain on this page): <button id="myBtn1" type="button" class="btn btn-link mb-3">Review Payment Procedure</button>
+  <font size="+1"
+    ><b
+      >Reminder: {% if bsr %}Your chance of receiving &euro;{{ stakes|to2 }}
+      will depend <i>both</i> on your prediction and which ball is drawn from
+      this urn, according to the
+      <font color="maroon">payment procedure</font>.{% else %}Your payoff will
+      depend <i>both</i> on your prediction and which ball is drawn from this
+      urn, according to the <font color="maroon">payment procedure</font>.{%
+      endif %}</b
+    ></font
+  >
+  <br />
+  Click this link to see the instructions again (you will remain on this page):
+  <button id="myBtn1" type="button" class="btn btn-link mb-3">
+    Review Payment Procedure
+  </button>
 </p>
 
-<br>
-<br>
+<br />
+<br />
 
 <div class="button" align="center" id="active1">
-    <button class="btn btn-danger mb-3">
-        SUBMIT
-    </button>
+  <button class="btn btn-danger mb-3">SUBMIT</button>
 </div>
 
 <div class="button" align="center" id="inactive1">
-    <button class="btn btn-secondary disabled mb-3">
-        SUBMIT
-    </button>
+  <button class="btn btn-secondary disabled mb-3">SUBMIT</button>
 </div>
 
 {% elif player.belief_subpage == 2 %}
@@ -1174,8 +1617,9 @@ video {
 <!--</p>-->
 
 <p align="center">
-    <br><br>
-    Your prediction was <font size="+2"><b>{{ player.belief }}%</b></font>.
+  <br /><br />
+  Your prediction was <font size="+2"><b>{{ player.belief }}%</b></font
+  >.
 </p>
 
 <!--<p>-->
@@ -1184,37 +1628,44 @@ video {
 <!--</p>-->
 
 <p>
-    <br><br>
-    Given the <font color="maroon"><b>payment procedure</b></font>, how <b><font color="0000cc">certain</font></b> are you that the <b>optimal answer</b> is between {{ minvalue }}% and {{ maxvalue }}%?
+  <br /><br />
+  Given the <font color="maroon"><b>payment procedure</b></font
+  >, how <b><font color="0000cc">certain</font></b> are you that the
+  <b>optimal answer</b> is between {{ minvalue }}% and {{ maxvalue }}%?
 </p>
 
-<br>
+<br />
 
 <center>
-    <table style="width:100%">
-
-        <tr>
-            {{ for choice in form.cognitive_certainty }}
-            <td style="width:4.5%; padding-left:18px; text-align:center">{{ choice }}<br></td>
-            {{ endfor }}
-        </tr>
-        <tr>
-            {{ for choice in form.cognitive_certainty }}
-            <td style="width:4.5%; padding-left:0px; text-align:center">{{ choice.label }}</td>
-            {{ endfor }}
-        </tr>
-        <tr>
-            <td colspan="10" style="text-align:left; padding-left:0px"><b>Very uncertain</b></td>
-            <td colspan="11" style="text-align:right; padding-right:0px"><b>Completely certain</b></td>
-        </tr>
-    </table>
+  <table style="width: 100%">
+    <tr>
+      {{ for choice in form.cognitive_certainty }}
+      <td style="width: 4.5%; padding-left: 18px; text-align: center">
+        {{ choice }}<br />
+      </td>
+      {{ endfor }}
+    </tr>
+    <tr>
+      {{ for choice in form.cognitive_certainty }}
+      <td style="width: 4.5%; padding-left: 0px; text-align: center">
+        {{ choice.label }}
+      </td>
+      {{ endfor }}
+    </tr>
+    <tr>
+      <td colspan="10" style="text-align: left; padding-left: 0px">
+        <b>Very uncertain</b>
+      </td>
+      <td colspan="11" style="text-align: right; padding-right: 0px">
+        <b>Completely certain</b>
+      </td>
+    </tr>
+  </table>
 </center>
 
 <div class="button" align="right">
-    <br><br>
-    <button class="btn btn-primary mb-3">
-        NEXT
-    </button>
+  <br /><br />
+  <button class="btn btn-primary mb-3">NEXT</button>
 </div>
 
 <!--<center>-->
@@ -1254,103 +1705,323 @@ video {
 
 <!-- The Modal -->
 <div id="myModal" class="modal">
-
-    <!-- Modal content -->
-    <div class="modal-content">
-        <div class="modal-header">
-            <span class="close">&times;</span>
-        </div>
-        <div class="modal-body">
-            <center><font size="+2">
-              <b>Instructions</b>
-            </font></center>
-            <p>
-            <br>
-            {% if session.config.prolific %}This experiment {% else %}Part A {% endif %}consists of six rounds of an individual decision-making task. At the end of the experiment,{% if session.config.prolific == False %} if you are paid for Part A, then{% endif %} the computer will randomly pick <b>one of the six rounds</b> for payment.
-    <br><br>
-    In each round, your task is to predict the chances that an "event" will occur.
-    <br><br>
-    For example: What is the chance that a random card drawn from a full deck of standard playing cards is a heart?
-    <br>
-    We want you to predict this chance from 0 to 100%.
-    <br><br>
-    {{ if bsr }}
-    <b>You will want to think about your answer carefully. This is because, based on the prediction you give, we will use a <font color="maroon">payment procedure</font> that rewards you with up to 100 lottery tickets to earn a prize of {{ if stakeshigh }}{{ stakes }}{{ else }}{{ stakes|to2 }}{{ endif }} euros.</b>
-    <br><br>
-    <b>Each lottery ticket corresponds to a 1% chance to win the prize of {{ if stakeshigh }}{{ stakes }}{{ else }}{{ stakes|to2 }}{{ endif }} euros.</b> So, the more lottery tickets you have, the higher your chances will be to win.
-    {{ elif qsr }}
-    <b>You will want to think about your answer carefully. This is because, based on the prediction you give, we will use a <font color="maroon">payment procedure</font> that rewards you with up to 100 tickets worth up to a combined maximum value of {{ if stakeshigh }}{{ stakes }}{{ else }}{{ stakes|to2 }}{{ endif }} euros.</b>
-    <br><br>
-    <b>Each ticket is worth {{ if stakeshigh }}<script>document.write({{ stakes }}/100*100)</script> cents{{ else }}<script>document.write({{ stakes }}/100*100)</script> cents{{ endif }}.</b> So, the more tickets you have, the more money you will receive.
-    {{ endif }}
-    <br><br>
-    The number of {{ if bsr }}lottery {{ endif}}tickets you will receive is determined by the following formulas:
-    <br><br>
-    &emsp;&emsp; Number of {{ if bsr }}lottery {{ endif}}tickets if <i>Event</i> <b>occurs</b> = \(\left[1-\left(\frac{100-\text{your prediction}}{100}\right)^2\right]\times 100\)
-    <br>
-    &emsp;&emsp; Number of {{ if bsr }}lottery {{ endif}}tickets if <i>Event</i> <b>does not occur</b> = \(\left[1-\left(\frac{\text{your prediction}}{100}\right)^2\right]\times 100\)
-    <br><br>
-    <b>In summary, you will receive more {{ if bsr }}lottery {{ endif}}tickets on average if your prediction of the <i>Event</i> is more accurate.</b>
-            </p>
-            {% if session.config.simple_instruction == False %}
-            <center><font size="+2">
-               <b>Instructions (Video 1)</b>
-            </font>
-                <br>
-                Watch Part 1 of the video below.
-                <br>
-                <video width="800" height="500" id="myVideo1">
-                   <source src="{{ static video1path }}" type="video/mp4">
-                   Video not supported. Please use a supported browser, or send a message to the Experimenter.
-                </video>
-                <!-- Video 1 Controls -->
-                <div id="video-controls1">
-                <button type="button" id="play-pause1">Play/Pause</button>
-                <input type="range" id="seek-bar1" value="0">
-                <button type="button" id="mute1">Mute</button>
-                <input type="range" id="volume-bar1" min="0" max="1" step="0.1" value="1">
-                </div>
-            </center>
-            <center><font size="+2">
-               <b>Instructions (Video 2)</b>
-            </font>
-                <br>
-                Watch Part 2 of the video below.
-                <br>
-                <video width="800" height="500" id="myVideo2">
-                   <source src="{{ static video2path }}" type="video/mp4">
-                   Video not supported. Please use a supported browser, or send a message to the Experimenter.
-                </video>
-                <!-- Video 2 Controls -->
-                <div id="video-controls2">
-                <button type="button" id="play-pause2">Play/Pause</button>
-                <input type="range" id="seek-bar2" value="0">
-                <button type="button" id="mute2">Mute</button>
-                <input type="range" id="volume-bar2" min="0" max="1" step="0.1" value="1">
-                </div>
-            </center>
-            <center><font size="+2">
-               <b>Instructions (Video 3)</b>
-            </font>
-                <br>
-                Watch Part 3 of the video below.
-                <br>
-                <video width="800" height="500" id="myVideo3">
-                   <source src="{{ static video3path }}" type="video/mp4">
-                   Video not supported. Please use a supported browser, or send a message to the Experimenter.
-                </video>
-                <!-- Video 3 Controls -->
-                <div id="video-controls3">
-                <button type="button" id="play-pause3">Play/Pause</button>
-                <input type="range" id="seek-bar3" value="0">
-                <button type="button" id="mute3">Mute</button>
-                <input type="range" id="volume-bar3" min="0" max="1" step="0.1" value="1">
-                </div>
-            </center>
-            {% endif %}
-        </div>
-        <div class="modal-footer"></div>
+  <!-- Modal content -->
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="close">&times;</span>
     </div>
+    <div class="modal-body">
+      <center>
+        <font size="+2">
+          <b>Instructions</b>
+        </font>
+      </center>
+      <p>
+        <br />
+        {% if session.config.prolific %}This experiment {% else %}Part A {%
+        endif %}consists of six rounds of an individual decision-making task. At
+        the end of the experiment,{% if session.config.prolific == False %} if
+        you are paid for Part A, then{% endif %} the computer will randomly pick
+        <b>one of the six rounds</b> for payment. <br /><br />
+        In each round, your task is to predict the chances that an "event" will
+        occur.
+        <br /><br />
+        For example: What is the chance that a random card drawn from a full
+        deck of standard playing cards is a heart?
+        <br />
+        We want you to predict this chance from 0 to 100%.
+        <br /><br />
+        {{ if bsr }}
+        <b
+          >You will want to think about your answer carefully. This is because,
+          based on the prediction you give, we will use a
+          <font color="maroon">payment procedure</font> that rewards you with up
+          to 100 lottery tickets to earn a prize of {{ if stakeshigh }}{{ stakes
+          }}{{ else }}{{ stakes|to2 }}{{ endif }} euros.</b
+        >
+        <br /><br />
+        <b
+          >Each lottery ticket corresponds to a 1% chance to win the prize of {{
+          if stakeshigh }}{{ stakes }}{{ else }}{{ stakes|to2 }}{{ endif }}
+          euros.</b
+        >
+        So, the more lottery tickets you have, the higher your chances will be
+        to win. {{ elif qsr }}
+        <b
+          >You will want to think about your answer carefully. This is because,
+          based on the prediction you give, we will use a
+          <font color="maroon">payment procedure</font> that rewards you with up
+          to 100 tickets worth up to a combined maximum value of {{ if
+          stakeshigh }}{{ stakes }}{{ else }}{{ stakes|to2 }}{{ endif }}
+          euros.</b
+        >
+        <br /><br />
+        <b
+          >Each ticket is worth {{ if stakeshigh }}
+          <script>
+            document.write({{ stakes }}/100*100)
+          </script>
+          cents{{ else }}
+          <script>
+            document.write({{ stakes }}/100*100)
+          </script>
+          cents{{ endif }}.</b
+        >
+        So, the more tickets you have, the more money you will receive. {{ endif
+        }} <br /><br />
+        The number of {{ if bsr }}lottery {{ endif}}tickets you will receive is
+        determined by the following formulas:
+        <br /><br />
+        &emsp;&emsp; Number of {{ if bsr }}lottery {{ endif}}tickets if
+        <i>Event</i> <b>occurs</b> = \(\left[1-\left(\frac{100-\text{your
+        prediction}}{100}\right)^2\right]\times 100\)
+        <br />
+        &emsp;&emsp; Number of {{ if bsr }}lottery {{ endif}}tickets if
+        <i>Event</i> <b>does not occur</b> = \(\left[1-\left(\frac{\text{your
+        prediction}}{100}\right)^2\right]\times 100\) <br /><br />
+        <b
+          >In summary, you will receive more {{ if bsr }}lottery {{
+          endif}}tickets on average if your prediction of the <i>Event</i> is
+          more accurate.</b
+        >
+      </p>
+      {% if session.config.simple_instruction == False %}
+      <div class="all-video-container">
+        <center>
+          <font size="+2">
+            <b>Instructions (Video 1)</b>
+          </font>
+          <br />
+          Watch Part 1 of the video below.
+          <br />
+          <br />
+
+          <div class="video-and-ui-container video-1-container">
+            <div class="video-container">
+              <div class="backwards-container">
+                <img
+                  src="{% static 'global/video-ui-assets/bf.png' %}"
+                  alt="Backwards 5seconds"
+                />
+              </div>
+
+              <div class="forwards-container">
+                <img
+                  src="{% static 'global/video-ui-assets/ff.png' %}"
+                  alt="Backwards 5seconds"
+                />
+              </div>
+              <video width="800" height="500" id="myVideo1">
+                <source src="{{ static video1path }}" type="video/mp4" />
+                Video not supported. Please use a supported browser, or send a
+                message to the Experimenter.
+              </video>
+            </div>
+            <!-- Video Controls -->
+            <div id="video-controls">
+              <div class="video-ui-container">
+                <button type="button" id="play-pause1">
+                  <img
+                    src="{% static 'global/video-ui-assets/play.png' %}"
+                    class="play"
+                    alt="Play
+                        Video"
+                  />
+                  <img
+                    src="{% static 'global/video-ui-assets/pause.png' %}"
+                    class="pause"
+                    alt="Pause Video"
+                  />
+                </button>
+                <div class="audio-container">
+                  <button type="button" id="audio-btn1">
+                    <img
+                      src="{% static 'global/video-ui-assets/volume.png' %}"
+                      alt="Play Sound"
+                      class="play-sound"
+                    />
+                    <img
+                      src="{% static 'global/video-ui-assets/mute.png' %}"
+                      alt="Mute Sound"
+                      class="mute-sound"
+                    />
+                  </button>
+                  <div class="audio-slider-container">
+                    <input
+                      type="range"
+                      id="volume-bar1"
+                      min="0"
+                      max="1"
+                      step="0.1"
+                      value="1"
+                    />
+                  </div>
+                </div>
+
+                <input type="range" id="seek-bar1" value="0" />
+              </div>
+              <div class="volume"></div>
+            </div>
+          </div>
+        </center>
+        <center>
+          <font size="+2">
+            <b>Instructions (Video 2)</b>
+          </font>
+          <br />
+          Watch Part 2 of the video below.
+          <br />
+          <br />
+
+          <div class="video-and-ui-container video-2-container">
+            <div class="video-container">
+              <div class="backwards-container">
+                <img
+                  src="{% static 'global/video-ui-assets/bf.png' %}"
+                  alt="Backwards 5seconds"
+                />
+              </div>
+
+              <div class="forwards-container">
+                <img
+                  src="{% static 'global/video-ui-assets/ff.png' %}"
+                  alt="Backwards 5seconds"
+                />
+              </div>
+              <video width="800" height="500" id="myVideo2">
+                <source src="{{ static video2path }}" type="video/mp4" />
+                Video not supported. Please use a supported browser, or send a
+                message to the Experimenter.
+              </video>
+            </div>
+            <!-- Video Controls -->
+            <div id="video-controls">
+              <div class="video-ui-container">
+                <button type="button" id="play-pause2">
+                  <img
+                    src="{% static 'global/video-ui-assets/play.png' %}"
+                    class="play"
+                    alt="Play
+                          Video"
+                  />
+                  <img
+                    src="{% static 'global/video-ui-assets/pause.png' %}"
+                    class="pause"
+                    alt="Pause Video"
+                  />
+                </button>
+                <div class="audio-container">
+                  <button type="button" id="audio-btn2">
+                    <img
+                      src="{% static 'global/video-ui-assets/volume.png' %}"
+                      alt="Play Sound"
+                      class="play-sound"
+                    />
+                    <img
+                      src="{% static 'global/video-ui-assets/mute.png' %}"
+                      alt="Mute Sound"
+                      class="mute-sound"
+                    />
+                  </button>
+                  <div class="audio-slider-container">
+                    <input
+                      type="range"
+                      id="volume-bar2"
+                      min="0"
+                      max="1"
+                      step="0.1"
+                      value="1"
+                    />
+                  </div>
+                </div>
+
+                <input type="range" id="seek-bar2" value="0" />
+              </div>
+              <div class="volume"></div>
+            </div>
+          </div>
+        </center>
+        <center>
+          <font size="+2">
+            <b>Instructions (Video 3)</b>
+          </font>
+          <br />
+          Watch Part 3 of the video below.
+          <br />
+          <br />
+
+          <div class="video-and-ui-container video-3-container">
+            <div class="video-container">
+              <div class="backwards-container">
+                <img
+                  src="{% static 'global/video-ui-assets/bf.png' %}"
+                  alt="Backwards 5seconds"
+                />
+              </div>
+
+              <div class="forwards-container">
+                <img
+                  src="{% static 'global/video-ui-assets/ff.png' %}"
+                  alt="Backwards 5seconds"
+                />
+              </div>
+              <video width="800" height="500" id="myVideo3">
+                <source src="{{ static video3path }}" type="video/mp4" />
+                Video not supported. Please use a supported browser, or send a
+                message to the Experimenter.
+              </video>
+            </div>
+            <!-- Video Controls -->
+            <div id="video-controls">
+              <div class="video-ui-container">
+                <button type="button" id="play-pause3">
+                  <img
+                    src="{% static 'global/video-ui-assets/play.png' %}"
+                    class="play"
+                    alt="Play
+                          Video"
+                  />
+                  <img
+                    src="{% static 'global/video-ui-assets/pause.png' %}"
+                    class="pause"
+                    alt="Pause Video"
+                  />
+                </button>
+                <div class="audio-container">
+                  <button type="button" id="audio-btn3">
+                    <img
+                      src="{% static 'global/video-ui-assets/volume.png' %}"
+                      alt="Play Sound"
+                      class="play-sound"
+                    />
+                    <img
+                      src="{% static 'global/video-ui-assets/mute.png' %}"
+                      alt="Mute Sound"
+                      class="mute-sound"
+                    />
+                  </button>
+                  <div class="audio-slider-container">
+                    <input
+                      type="range"
+                      id="volume-bar3"
+                      min="0"
+                      max="1"
+                      step="0.1"
+                      value="1"
+                    />
+                  </div>
+                </div>
+                <input type="range" id="seek-bar3" value="0" />
+              </div>
+              <div class="volume"></div>
+            </div>
+          </div>
+        </center>
+      </div>
+      {% endif %}
+    </div>
+    <div class="modal-footer"></div>
+  </div>
 </div>
 
 {{ endblock }}
